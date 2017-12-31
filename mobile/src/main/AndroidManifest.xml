@@ -18,6 +18,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name=".data.providers.LocationsProvider"
+            android:authorities="stormcast.app.phoenix.io.stormcast.locations"
+            android:exported="false" />
+        <provider
+            android:name=".data.providers.ForecastProvider"
+            android:authorities="stormcast.app.phoenix.io.stormcast.forecast"
+            android:exported="false" />
     </application>
 
 </manifest>
