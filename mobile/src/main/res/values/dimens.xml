@@ -9,7 +9,7 @@
     <dimen name="font_size_button">13sp</dimen>
 
     <!-- nav_drawer -->
-    <dimen name="nav_drawer_width">300dp</dimen>
+    <dimen name="nav_drawer_width">275dp</dimen>
     <dimen name="nav_drawer_header_height">125dp</dimen>
     <dimen name="layout_nav_header_image_view_logo_size">50dp</dimen>
 
