@@ -40,7 +40,7 @@ public class LocationsProvider extends ContentProvider {
     private static UriMatcher builderUriMatcher() {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(PersistenceContract.LOCATIONS_AUTHORITY, PersistenceContract.LOCATIONS_PATH, LOCATIONS);
-        uriMatcher.addURI(PersistenceContract.LOCATIONS_AUTHORITY, PersistenceContract.LOCATIONS_PATH + "/*/#/", LOCATIONS_WITH_ID);
+        uriMatcher.addURI(PersistenceContract.LOCATIONS_AUTHORITY, PersistenceContract.LOCATIONS_PATH + "/#/", LOCATIONS_WITH_ID);
         return uriMatcher;
     }
 

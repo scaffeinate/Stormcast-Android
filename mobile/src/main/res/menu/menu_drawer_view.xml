@@ -33,6 +33,10 @@
                         android:icon="@drawable/ic_share_variant_white_18dp"
                         android:title="@string/action_share" />
                     <item
+                        android:id="@+id/action_rate_us"
+                        android:icon="@drawable/ic_star_white_18dp"
+                        android:title="@string/action_rate_us" />
+                    <item
                         android:id="@+id/action_version"
                         android:icon="@drawable/ic_information_white_18dp"
                         android:title="@string/action_version" />
