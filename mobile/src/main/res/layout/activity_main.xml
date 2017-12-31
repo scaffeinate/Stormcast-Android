@@ -6,7 +6,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        tools:context=".activities.MainActivity">
 
         <android.support.v4.widget.DrawerLayout
             android:id="@+id/drawer_layout"
@@ -25,6 +25,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="start"
                 android:fitsSystemWindows="true"
+                app:headerLayout="@layout/layout_nav_header"
                 app:itemBackground="@drawable/selector_nav_drawer_menu_item"
                 app:itemIconTint="@drawable/selector_nav_drawer_menu_text"
                 app:itemTextColor="@drawable/selector_nav_drawer_menu_text"

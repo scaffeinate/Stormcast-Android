@@ -1,3 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/menu"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_sub_header_forecast"
+            android:title="@string/nav_sub_header_forecast">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/action_forecast"
+                        android:icon="@drawable/ic_weather_lightning_white_24dp"
+                        android:title="@string/action_forecast" />
+                    <item
+                        android:id="@+id/action_edit_locations"
+                        android:icon="@drawable/ic_map_marker_plus_white_18dp"
+                        android:title="@string/action_edit_locations" />
+                </group>
+            </menu>
+        </item>
+        <item
+            android:id="@+id/nav_sub_header_settings"
+            android:title="@string/nav_sub_header_settings">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/action_settings"
+                        android:icon="@drawable/ic_settings_white_18dp"
+                        android:title="@string/action_settings" />
+                    <item
+                        android:id="@+id/action_share"
+                        android:icon="@drawable/ic_share_variant_white_18dp"
+                        android:title="@string/action_share" />
+                </group>
+            </menu>
+        </item>
+    </group>
 </menu>

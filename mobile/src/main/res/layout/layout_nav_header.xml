@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/nav_drawer_header_height"
+    android:background="@color/colorAccent"
+    tools:ignore="Overdraw">
+
+    <ImageView
+        android:id="@+id/image_view_logo"
+        android:layout_width="@dimen/layout_nav_header_image_view_logo_size"
+        android:layout_height="@dimen/layout_nav_header_image_view_logo_size"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:contentDescription="@string/logo_image"
+        android:scaleType="centerCrop"
+        android:tint="@android:color/white"
+        app:srcCompat="@drawable/ic_weather_sunny_white_24dp" />
+</RelativeLayout>
