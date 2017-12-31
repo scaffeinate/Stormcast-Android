@@ -1,0 +1,29 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorControlNormal">@android:color/white</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+        <item name="colorControlHighlight">@color/colorAccent</item>
+    </style>
+
+    <style name="NavigationDrawerStyle">
+        <item name="android:fontFamily">@font/renner_medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/font_size_caption</item>
+    </style>
+
+    <style name="Display">
+        <item name="android:textSize">@dimen/font_size_display</item>
+        <item name="android:fontFamily">@font/renner_bold</item>
+        <item name="android:textColor">@color/textColorDark</item>
+    </style>
+
+    <style name="Title" parent="Display">
+        <item name="android:textSize">@dimen/font_size_title</item>
+    </style>
+</resources>

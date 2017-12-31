@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- font_sizes -->
+    <dimen name="font_size_display">32dp</dimen>
+    <dimen name="font_size_title">20sp</dimen>
+    <dimen name="font_size_subheading">16sp</dimen>
+    <dimen name="font_size_caption">16sp</dimen>
+    <dimen name="font_size_body">15sp</dimen>
+    <dimen name="font_size_button">13sp</dimen>
+
+    <!-- nav_drawer -->
+    <dimen name="nav_drawer_width">300dp</dimen>
+    <dimen name="nav_drawer_header_height">125dp</dimen>
+
+    <!-- common -->
+    <dimen name="progress_bar_size">42dp</dimen>
+    <dimen name="toolbar_padding_right">30dp</dimen>
+
+
+    <!-- fragment_home -->
+    <dimen name="fragment_home_btn_add_margin">20dp</dimen>
+</resources>
