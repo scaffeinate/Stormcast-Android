@@ -13,9 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import java.lang.annotation.Retention;
 import java.util.ArrayList;
@@ -122,7 +119,7 @@ public class MaterialColorPickDialog {
         public void show() {
             if (mContext instanceof Activity) {
                 Activity activity = (Activity) mContext;
-                if (!activity.isFinishing() && !activity.isDestroyed()) {
+                if (!activity.isFinishing()) {
                     this.mAlertDialog.show();
                     this.limitHeight();
                 }

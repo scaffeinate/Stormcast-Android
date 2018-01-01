@@ -13,6 +13,9 @@
     <string name="action_rate_us">Rate us</string>
     <string name="action_version">v</string>
 
+    <!-- dialog_color_picker -->
+    <string name="pick_a_color">Pick a color</string>
+
     <!-- descriptions -->
     <string name="logo_image">Logo</string>
 </resources>

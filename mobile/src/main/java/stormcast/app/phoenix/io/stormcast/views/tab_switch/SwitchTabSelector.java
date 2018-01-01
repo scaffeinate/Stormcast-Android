@@ -1,6 +1,7 @@
-package stormcast.app.phoenix.io.stormcast.views.tab_switches;
+package stormcast.app.phoenix.io.stormcast.views.tab_switch;
 
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.Nullable;
@@ -17,6 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import stormcast.app.phoenix.io.stormcast.R;
+import stormcast.app.phoenix.io.stormcast.databinding.LayoutSwitchTabBinding;
+import stormcast.app.phoenix.io.stormcast.databinding.LayoutSwitchTabSelectorBinding;
 
 /**
  * Created by sudharti on 9/24/17.
@@ -32,6 +35,9 @@ public class SwitchTabSelector extends LinearLayout implements View.OnTouchListe
     private Map<Integer, TextView> textViewsMap = null;
     private int mSelectedIndex = 0;
     private int mColorAccent = 0;
+
+    private LayoutSwitchTabBinding mBinding;
+    private LayoutSwitchTabSelectorBinding mSelectorBinding;
 
     public SwitchTabSelector(Context context) {
         this(context, null);
@@ -50,8 +56,10 @@ public class SwitchTabSelector extends LinearLayout implements View.OnTouchListe
 
         mColorAccent = ContextCompat.getColor(mContext, R.color.colorAccent);
 
-        inflater = LayoutInflater.from(mContext);
-        inflater.inflate(R.layout.layout_switch_tab_selector, this, true);
+        inflater = LayoutInflater.from(context);
+
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.layout_switch_tab, null, false);
+        mSelectorBinding = DataBindingUtil.inflate(inflater, R.layout.layout_switch_tab_selector, null, false);
 
         setBackground(ContextCompat.getDrawable(mContext, R.drawable.shape_rounded_corners_border_accent));
     }
