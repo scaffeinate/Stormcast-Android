@@ -20,6 +20,8 @@ public class Location implements Parcelable {
     private double latitude = 0, longitude = 0;
     private int id = 0, unit = UNIT_AUTO, position = 0;
 
+    public Location() {}
+
     protected Location(Parcel in) {
         name = in.readString();
         address = in.readString();

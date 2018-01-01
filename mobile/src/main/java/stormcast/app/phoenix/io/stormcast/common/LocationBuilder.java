@@ -14,9 +14,6 @@ public class LocationBuilder {
     protected String backgroundColor = null, textColor = null;
     protected int unit = Location.UNIT_AUTO, position = 0;
 
-    public LocationBuilder() {
-    }
-
     public LocationBuilder(Location location) {
         setId(location.getId())
                 .setName(location.getName())

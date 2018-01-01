@@ -74,7 +74,7 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
     private FragmentAddLocationBinding mBinding;
 
     public static AddLocationFragment newInstance(boolean finishActivityOnAction) {
-        return newInstance(null, finishActivityOnAction);
+        return newInstance(new Location(), finishActivityOnAction);
     }
 
     public static AddLocationFragment newInstance(Location location, boolean finishActivityOnAction) {

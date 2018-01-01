@@ -7,5 +7,7 @@
         android:id="@+id/tab_pill_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
         android:textAllCaps="true" />
 </RelativeLayout>

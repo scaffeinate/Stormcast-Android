@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:map="http://schemas.android.com/apk/res-auto">
 
     <ScrollView
@@ -47,8 +46,7 @@
                 android:layout_marginTop="@dimen/fragment_add_location_text_view_margin_top"
                 android:text="@string/customize"
                 android:textColor="@color/textColorDark"
-                android:textSize="@dimen/font_size_subheading"
-                custom:weight="bolder" />
+                android:textSize="@dimen/font_size_subheading" />
 
             <Button
                 android:id="@+id/background_color_btn"
@@ -84,8 +82,7 @@
                 android:layout_marginTop="@dimen/fragment_add_location_text_view_margin_top"
                 android:text="@string/units"
                 android:textColor="@color/textColorDark"
-                android:textSize="@dimen/font_size_subheading"
-                custom:weight="bolder" />
+                android:textSize="@dimen/font_size_subheading" />
 
             <stormcast.app.phoenix.io.stormcast.views.tab_pills.TabPills
                 android:id="@+id/units_switch_tab_selector"
