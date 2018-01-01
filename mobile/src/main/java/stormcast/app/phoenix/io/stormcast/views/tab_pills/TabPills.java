@@ -1,7 +1,6 @@
-package stormcast.app.phoenix.io.stormcast.views.tab_switch;
+package stormcast.app.phoenix.io.stormcast.views.tab_pills;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.Nullable;
@@ -18,14 +17,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import stormcast.app.phoenix.io.stormcast.R;
-import stormcast.app.phoenix.io.stormcast.databinding.LayoutSwitchTabBinding;
-import stormcast.app.phoenix.io.stormcast.databinding.LayoutSwitchTabSelectorBinding;
 
 /**
  * Created by sudharti on 9/24/17.
  */
 
-public class SwitchTabSelector extends LinearLayout implements View.OnTouchListener {
+public class TabPills extends LinearLayout implements View.OnTouchListener {
 
     private final LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, 120);
     private Context mContext;
@@ -36,18 +33,15 @@ public class SwitchTabSelector extends LinearLayout implements View.OnTouchListe
     private int mSelectedIndex = 0;
     private int mColorAccent = 0;
 
-    private LayoutSwitchTabBinding mBinding;
-    private LayoutSwitchTabSelectorBinding mSelectorBinding;
-
-    public SwitchTabSelector(Context context) {
+    public TabPills(Context context) {
         this(context, null);
     }
 
-    public SwitchTabSelector(Context context, @Nullable AttributeSet attrs) {
+    public TabPills(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public SwitchTabSelector(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public TabPills(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.mContext = context;
         this.viewsMap = new HashMap<>();
@@ -57,10 +51,7 @@ public class SwitchTabSelector extends LinearLayout implements View.OnTouchListe
         mColorAccent = ContextCompat.getColor(mContext, R.color.colorAccent);
 
         inflater = LayoutInflater.from(context);
-
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.layout_switch_tab, null, false);
-        mSelectorBinding = DataBindingUtil.inflate(inflater, R.layout.layout_switch_tab_selector, null, false);
-
+        inflater.inflate(R.layout.layout_tab_pills, null);
         setBackground(ContextCompat.getDrawable(mContext, R.drawable.shape_rounded_corners_border_accent));
     }
 
@@ -68,7 +59,7 @@ public class SwitchTabSelector extends LinearLayout implements View.OnTouchListe
         this.switchTabs = switchTabs;
 
         for (int i = 0; i < switchTabs.length; i++) {
-            RelativeLayout switchTab = inflateView(i, switchTabs[i].entry.toString());
+            RelativeLayout switchTab = (RelativeLayout) inflateView(i, switchTabs[i].entry.toString());
             this.addView(switchTab);
             switchTab.setOnTouchListener(this);
             setState(i, false);
@@ -93,23 +84,23 @@ public class SwitchTabSelector extends LinearLayout implements View.OnTouchListe
         return true;
     }
 
-    private RelativeLayout inflateView(int index, String entryText) {
-        RelativeLayout switchTab = (RelativeLayout) inflater.inflate(R.layout.layout_switch_tab, null);
-        switchTab.setLayoutParams(layoutParams);
+    private View inflateView(int index, String entryText) {
+        RelativeLayout tabSwitch = (RelativeLayout) inflater.inflate(R.layout.item_tab_pill, null);
+        tabSwitch.setLayoutParams(layoutParams);
 
-        TextView textView = switchTab.findViewById(R.id.switch_tab_text);
+        TextView textView = tabSwitch.findViewById(R.id.tab_pill_text_view);
         textView.setText(entryText);
         textView.setTextColor(mColorAccent);
 
         int res = ((index == 0) ? R.drawable.shape_switch_tab_btn_left_rounded :
                 ((index == switchTabs.length - 1) ? R.drawable.shape_switch_tab_btn_right_rounded : R.drawable.shape_switch_tab_btn));
-        switchTab.setBackground(ContextCompat.getDrawable(mContext, res));
+        tabSwitch.setBackground(ContextCompat.getDrawable(mContext, res));
 
-        this.viewsMap.put(index, switchTab);
+        this.viewsMap.put(index, tabSwitch);
         this.textViewsMap.put(index, textView);
 
-        switchTab.setId(index);
-        return switchTab;
+        tabSwitch.setId(index);
+        return tabSwitch;
     }
 
     private void setState(int index, boolean selected) {

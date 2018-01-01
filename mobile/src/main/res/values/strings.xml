@@ -13,6 +13,17 @@
     <string name="action_rate_us">Rate us</string>
     <string name="action_version">v</string>
 
+    <!-- fragment_add_location -->
+    <string name="enter_location_name">Enter Location Name</string>
+    <string name="customize">Customize</string>
+    <string name="background_color">Background Color</string>
+    <string name="text_color">Text Color</string>
+    <string name="auto_units">Auto units</string>
+    <string name="units">Units</string>
+    <string name="imperial">Imperial</string>
+    <string name="metric">Metric</string>
+    <string name="add_location">Add Location</string>
+
     <!-- dialog_color_picker -->
     <string name="pick_a_color">Pick a color</string>
 

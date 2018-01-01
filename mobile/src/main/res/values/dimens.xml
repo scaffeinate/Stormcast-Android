@@ -20,6 +20,14 @@
     <!-- fragment_home -->
     <dimen name="fragment_home_btn_add_margin">20dp</dimen>
 
+    <!-- fragment_add_location -->
+    <dimen name="fragment_add_location_padding">25dp</dimen>
+    <dimen name="fragment_add_location_map_view_height">75dp</dimen>
+    <dimen name="fragment_add_location_map_view_margin_top">20dp</dimen>
+    <dimen name="fragment_add_location_text_view_margin_top">20dp</dimen>
+    <dimen name="fragment_add_location_button_margin_top">20dp</dimen>
+    <dimen name="fragment_add_location_tab_pills_margin_top">15dp</dimen>
+
     <!-- dialog_color_picker -->
     <dimen name="dialog_color_picker_padding">25dp</dimen>
     <dimen name="dialog_color_picker_grid_margin_top">20dp</dimen>
