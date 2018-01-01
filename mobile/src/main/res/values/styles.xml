@@ -25,4 +25,9 @@
     <style name="Title" parent="Display">
         <item name="android:textSize">@dimen/font_size_title</item>
     </style>
+
+    <style name="ColorPickerAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_top_enter</item>
+        <item name="android:windowExitAnimation">@anim/slide_top_exit</item>
+    </style>
 </resources>

@@ -17,7 +17,10 @@
     <dimen name="progress_bar_size">42dp</dimen>
     <dimen name="toolbar_padding_right">20dp</dimen>
 
-
     <!-- fragment_home -->
     <dimen name="fragment_home_btn_add_margin">20dp</dimen>
+
+    <!-- dialog_color_picker -->
+    <dimen name="dialog_color_picker_padding">25dp</dimen>
+    <dimen name="dialog_color_picker_grid_margin_top">20dp</dimen>
 </resources>
