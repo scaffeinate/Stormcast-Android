@@ -9,5 +9,5 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:gravity="center"
-        android:textAllCaps="true" />
+        android:textAppearance="@style/Button" />
 </RelativeLayout>

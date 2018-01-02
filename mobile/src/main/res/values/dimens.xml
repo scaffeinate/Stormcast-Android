@@ -3,10 +3,10 @@
     <!-- font_sizes -->
     <dimen name="font_size_display">32dp</dimen>
     <dimen name="font_size_title">20sp</dimen>
-    <dimen name="font_size_subheading">16sp</dimen>
+    <dimen name="font_size_subheading">17sp</dimen>
     <dimen name="font_size_caption">15sp</dimen>
-    <dimen name="font_size_body">15sp</dimen>
-    <dimen name="font_size_button">13sp</dimen>
+    <dimen name="font_size_body">16sp</dimen>
+    <dimen name="font_size_button">14sp</dimen>
 
     <!-- nav_drawer -->
     <dimen name="nav_drawer_width">275dp</dimen>
@@ -22,11 +22,13 @@
 
     <!-- fragment_add_location -->
     <dimen name="fragment_add_location_padding">25dp</dimen>
+    <dimen name="fragment_add_location_edit_text_drawable_padding">15dp</dimen>
     <dimen name="fragment_add_location_map_view_height">75dp</dimen>
     <dimen name="fragment_add_location_map_view_margin_top">20dp</dimen>
     <dimen name="fragment_add_location_text_view_margin_top">20dp</dimen>
-    <dimen name="fragment_add_location_button_margin_top">20dp</dimen>
+    <dimen name="fragment_add_location_button_margin_top">15dp</dimen>
     <dimen name="fragment_add_location_tab_pills_margin_top">15dp</dimen>
+    <dimen name="fragment_add_location_button_padding">20dp</dimen>
 
     <!-- dialog_color_picker -->
     <dimen name="dialog_color_picker_padding">25dp</dimen>

@@ -25,6 +25,21 @@
     <style name="Title" parent="Display">
         <item name="android:textSize">@dimen/font_size_title</item>
     </style>
+    
+    <style name="SubHeading" parent="Display">
+        <item name="android:textSize">@dimen/font_size_subheading</item>
+    </style>
+
+    <style name="Body">
+        <item name="android:textSize">@dimen/font_size_body</item>
+        <item name="android:fontFamily">@font/renner_book</item>
+    </style>
+
+    <style name="Button">
+        <item name="android:textSize">@dimen/font_size_button</item>
+        <item name="android:fontFamily">@font/renner_medium</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
 
     <style name="ColorPickerAnimation">
         <item name="android:windowEnterAnimation">@anim/slide_top_enter</item>

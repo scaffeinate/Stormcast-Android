@@ -76,13 +76,11 @@ public class MaterialColorPickDialog {
         private List<ColorItem> mColorsList;
         private DialogColorPickerBinding mBinding;
 
-        private int mSelectedIndex = -1;
+        private int mSelectedIndex = 0;
 
         protected Builder(Context context) {
             this.mContext = context;
             this.mColorsList = deepCopy(sColorItems);
-            this.mBinding = DataBindingUtil.inflate(LayoutInflater.from(context),
-                    R.layout.dialog_color_picker, null, false);
         }
 
         public Builder setTitle(String title) {
@@ -101,6 +99,8 @@ public class MaterialColorPickDialog {
         }
 
         public Builder build() {
+            this.mBinding = DataBindingUtil.inflate(LayoutInflater.from(mContext),
+                    R.layout.dialog_color_picker, null, false);
             this.mDialogBuilder = new AlertDialog.Builder(this.mContext);
             this.mDialogBuilder.setView(mBinding.getRoot());
 
@@ -124,6 +124,30 @@ public class MaterialColorPickDialog {
                     this.limitHeight();
                 }
             }
+        }
+
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+            if (this.mOnColorPickedListener != null) {
+                ColorItem colorItem = mColorsList.get(position);
+                if (colorItem != null) {
+                    if (mSelectedIndex != -1) {
+                        ColorItem selectedItem = mColorsList.get(mSelectedIndex);
+                        selectedItem.setSelected(false);
+                    }
+
+                    colorItem.setSelected(true);
+                    mSelectedIndex = position;
+                    mAdapter.notifyDataSetChanged();
+
+                    this.mAlertDialog.dismiss();
+                    this.mOnColorPickedListener.onClick(colorItem.getColor());
+                }
+            }
+        }
+
+        public String getSelectedColor() {
+            return mColorsList.get(mSelectedIndex).getColor();
         }
 
         private void fillGrid() {
@@ -164,26 +188,6 @@ public class MaterialColorPickDialog {
                 copyList.add(new ColorItem(colorItem.getColor(), colorItem.isSelected()));
             }
             return copyList;
-        }
-
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-            if (this.mOnColorPickedListener != null) {
-                ColorItem colorItem = mColorsList.get(position);
-                if (colorItem != null) {
-                    if (mSelectedIndex != -1) {
-                        ColorItem selectedItem = mColorsList.get(mSelectedIndex);
-                        selectedItem.setSelected(false);
-                    }
-
-                    colorItem.setSelected(true);
-                    mSelectedIndex = position;
-                    mAdapter.notifyDataSetChanged();
-
-                    this.mAlertDialog.dismiss();
-                    this.mOnColorPickedListener.onClick(colorItem.getColor());
-                }
-            }
         }
     }
 

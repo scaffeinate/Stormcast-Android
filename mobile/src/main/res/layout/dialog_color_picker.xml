@@ -15,7 +15,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:text="@string/pick_a_color"
-            android:textSize="@dimen/font_size_subheading" />
+            android:textAppearance="@style/SubHeading" />
 
         <GridView
             android:id="@+id/colors_grid_view"

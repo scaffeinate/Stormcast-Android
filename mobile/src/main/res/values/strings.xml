@@ -18,7 +18,7 @@
     <string name="customize">Customize</string>
     <string name="background_color">Background Color</string>
     <string name="text_color">Text Color</string>
-    <string name="auto_units">Auto units</string>
+    <string name="auto">Auto</string>
     <string name="units">Units</string>
     <string name="imperial">Imperial</string>
     <string name="metric">Metric</string>
@@ -29,4 +29,8 @@
 
     <!-- descriptions -->
     <string name="logo_image">Logo</string>
+
+    <!-- messages -->
+    <string name="location_saved">Location Saved</string>
+    <string name="invalid_location">Invalid Location</string>
 </resources>
