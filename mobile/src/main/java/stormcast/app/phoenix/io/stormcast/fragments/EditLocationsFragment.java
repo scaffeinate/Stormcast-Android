@@ -1,5 +1,6 @@
 package stormcast.app.phoenix.io.stormcast.fragments;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,19 +33,21 @@ import stormcast.app.phoenix.io.stormcast.common.Location;
 import stormcast.app.phoenix.io.stormcast.common.LocationBuilder;
 import stormcast.app.phoenix.io.stormcast.data.PersistenceContract;
 import stormcast.app.phoenix.io.stormcast.databinding.FragmentEditLocationsBinding;
-import stormcast.app.phoenix.io.stormcast.loaders.ContentLoader;
+import stormcast.app.phoenix.io.stormcast.loaders.CursorLoaderCallbacks;
+import stormcast.app.phoenix.io.stormcast.loaders.AsyncTaskLoaderCallbacks;
 import stormcast.app.phoenix.io.stormcast.views.drag_drop_list.ItemTouchHelperAdapter;
 import stormcast.app.phoenix.io.stormcast.views.drag_drop_list.ItemTouchHelperCallback;
 import stormcast.app.phoenix.io.stormcast.views.drag_drop_list.OnStartDragListener;
 
 import static android.content.ContentValues.TAG;
 import static stormcast.app.phoenix.io.stormcast.Stormcast.LOCATIONS_LOADER_ID;
+import static stormcast.app.phoenix.io.stormcast.Stormcast.UPDATE_LOCATIONS_LOADER_ID;
 
 /**
  * Created by sudharti on 1/1/18.
  */
 
-public class EditLocationsFragment extends Fragment implements ItemTouchHelperAdapter, OnStartDragListener, ContentLoader.ContentLoaderCallback, View.OnClickListener {
+public class EditLocationsFragment extends Fragment implements ItemTouchHelperAdapter, OnStartDragListener, CursorLoaderCallbacks.ContentLoaderCallbacks, View.OnClickListener {
     private Context mContext;
     private FragmentManager mFragmentManager;
 
@@ -56,7 +60,11 @@ public class EditLocationsFragment extends Fragment implements ItemTouchHelperAd
 
     private FragmentEditLocationsBinding mBinding;
     private ToolbarCallbacks mToolbarCallbacks;
-    private ContentLoader mContentLoader;
+
+    private ContentResolver mContentResolver;
+    private LoaderManager mLoaderManager;
+
+    private CursorLoaderCallbacks mCursorLoaderCallbacks;
 
     private int mDeletedPosition = 0;
 
@@ -69,7 +77,7 @@ public class EditLocationsFragment extends Fragment implements ItemTouchHelperAd
         super.onCreate(savedInstanceState);
         mContext = getContext();
         mLocationList = new ArrayList<>();
-        mContentLoader = new ContentLoader(mContext, this);
+        mCursorLoaderCallbacks = new CursorLoaderCallbacks(mContext, this);
     }
 
     @Nullable
@@ -99,8 +107,18 @@ public class EditLocationsFragment extends Fragment implements ItemTouchHelperAd
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mToolbarCallbacks = (ToolbarCallbacks) getActivity();
-        mToolbarCallbacks.setToolbarTitle(getString(R.string.action_edit_locations));
+        if (getActivity() != null) {
+            mToolbarCallbacks = (ToolbarCallbacks) getActivity();
+            mToolbarCallbacks.setToolbarTitle(getString(R.string.action_edit_locations));
+
+            if (getActivity().getContentResolver() != null) {
+                mContentResolver = getActivity().getContentResolver();
+            }
+
+            if (getActivity().getSupportLoaderManager() != null) {
+                mLoaderManager = getActivity().getSupportLoaderManager();
+            }
+        }
     }
 
     @Override
@@ -111,10 +129,35 @@ public class EditLocationsFragment extends Fragment implements ItemTouchHelperAd
     }
 
     @Override
-    public void onItemMove(int fromPosition, int toPosition) {
+    public void onItemMove(final int fromPosition, final int toPosition) {
+        AsyncTaskLoaderCallbacks<Void> asyncTaskLoaderCallbacks = new AsyncTaskLoaderCallbacks<Void>(mContext, new AsyncTaskLoaderCallbacks.TaskLoaderCallbacks() {
+            @Override
+            public Void doInBackground() {
+                if (fromPosition < toPosition) {
+                    for (int i = fromPosition; i <= toPosition; i++) {
+                        Location location = mLocationList.get(i);
+                        location.setPosition(i + 1);
+                        saveLocation(location);
+                    }
+                } else {
+                    for (int i = toPosition; i <= fromPosition; i++) {
+                        Location location = mLocationList.get(i);
+                        location.setPosition(i + 1);
+                        saveLocation(location);
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            public void onTaskCompleted(Loader loader, Object data) {
+                Toast.makeText(mContext, "Reorder complete", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         Collections.swap(mLocationList, fromPosition, toPosition);
-        //new ReorderLocationsTask(mPresenter, mLocationModelList, fromPosition, toPosition).execute();
         mAdapter.notifyItemMoved(fromPosition, toPosition);
+        mLoaderManager.restartLoader(UPDATE_LOCATIONS_LOADER_ID, null, asyncTaskLoaderCallbacks);
     }
 
     @Override
@@ -161,11 +204,24 @@ public class EditLocationsFragment extends Fragment implements ItemTouchHelperAd
         }
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_add_location:
+                mFragmentManager.beginTransaction()
+                        .replace(R.id.layout_content, AddLocationFragment.newInstance())
+                        .addToBackStack(null)
+                        .commit();
+                break;
+        }
+    }
+
+
     private void fetchLocations() {
         Bundle args = new Bundle();
-        args.putParcelable(ContentLoader.URI_EXTRA, PersistenceContract.LOCATIONS_CONTENT_URI);
-        if (getActivity() != null && getActivity().getSupportLoaderManager() != null) {
-            getActivity().getSupportLoaderManager().restartLoader(LOCATIONS_LOADER_ID, args, mContentLoader);
+        args.putParcelable(CursorLoaderCallbacks.URI_EXTRA, PersistenceContract.LOCATIONS_CONTENT_URI);
+        if (mLoaderManager != null) {
+            mLoaderManager.restartLoader(LOCATIONS_LOADER_ID, args, mCursorLoaderCallbacks);
         }
     }
 
@@ -174,10 +230,10 @@ public class EditLocationsFragment extends Fragment implements ItemTouchHelperAd
         Uri uri = PersistenceContract.LOCATIONS_CONTENT_URI.buildUpon()
                 .appendPath(String.valueOf(location.getId()))
                 .build();
-        args.putParcelable(ContentLoader.URI_EXTRA, uri);
-        if (getActivity() != null && getActivity().getContentResolver() != null) {
+        args.putParcelable(CursorLoaderCallbacks.URI_EXTRA, uri);
+        if (mContentResolver != null) {
             try {
-                getActivity().getContentResolver().delete(uri, null, null);
+                mContentResolver.delete(uri, null, null);
                 mLocationList.remove(this.mDeletedPosition);
                 mAdapter.notifyItemRemoved(this.mDeletedPosition);
                 if (mLocationList.isEmpty()) {
@@ -205,15 +261,18 @@ public class EditLocationsFragment extends Fragment implements ItemTouchHelperAd
         mBinding.textViewErrorMessage.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btn_add_location:
-                mFragmentManager.beginTransaction()
-                        .replace(R.id.layout_content, AddLocationFragment.newInstance())
-                        .addToBackStack(null)
-                        .commit();
-                break;
+
+    private void saveLocation(Location location) {
+        if (mContentResolver != null && location != null) {
+            Uri uri = PersistenceContract.LOCATIONS_CONTENT_URI
+                    .buildUpon()
+                    .appendPath(String.valueOf(location.getId()))
+                    .build();
+            try {
+                mContentResolver.update(uri, location.toContentValues(), null, null);
+            } catch (UnsupportedOperationException | SQLiteException e) {
+                Log.e(TAG, "Exception occurred while updating location: " + e.getMessage());
+            }
         }
     }
 }

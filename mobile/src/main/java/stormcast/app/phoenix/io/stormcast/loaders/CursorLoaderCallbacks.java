@@ -13,14 +13,14 @@ import android.util.Log;
  * Created by sudharti on 1/1/18.
  */
 
-public class ContentLoader implements LoaderManager.LoaderCallbacks<Cursor> {
+public class CursorLoaderCallbacks implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String URI_EXTRA = "url_extra";
-    private static final String TAG = ContentLoader.class.getSimpleName();
+    private static final String TAG = CursorLoaderCallbacks.class.getSimpleName();
     private final Context mContext;
-    private final ContentLoaderCallback mCallback;
+    private final ContentLoaderCallbacks mCallback;
 
-    public ContentLoader(Context context, ContentLoaderCallback callback) {
+    public CursorLoaderCallbacks(Context context, ContentLoaderCallbacks callback) {
         this.mContext = context;
         this.mCallback = callback;
     }
@@ -51,7 +51,7 @@ public class ContentLoader implements LoaderManager.LoaderCallbacks<Cursor> {
     /**
      * ContentLoaderCallback - Callbacks to communicate back to the Activity/Fragment
      */
-    public interface ContentLoaderCallback {
+    public interface ContentLoaderCallbacks {
         void onLoadFinished(Loader loader, Cursor cursor);
     }
 }

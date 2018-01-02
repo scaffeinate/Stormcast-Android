@@ -61,7 +61,7 @@ public class LocationsProvider extends ContentProvider {
         switch (match) {
             case LOCATIONS:
                 cursor = db.query(LocationEntry.TABLE_NAME, null, null,
-                        null, null, null, sortOrder);
+                        null, null, null, LocationEntry.POSITION);
                 break;
             case LOCATIONS_WITH_ID:
                 List<String> pathSegments = uri.getPathSegments();
@@ -69,7 +69,7 @@ public class LocationsProvider extends ContentProvider {
                     String id = uri.getPathSegments().get(1);
                     cursor = db.query(LocationEntry.TABLE_NAME, projection,
                             LocationEntry._ID + EQUAL_TO + PARAM, new String[]{id},
-                            null, null, sortOrder);
+                            null, null, null);
                 }
                 break;
             default:
@@ -147,7 +147,7 @@ public class LocationsProvider extends ContentProvider {
                     String id = uri.getPathSegments().get(1);
                     res = db.update(LocationEntry.TABLE_NAME, contentValues,
                             LocationEntry._ID + EQUAL_TO + PARAM, new String[]{id});
-                    if (res == -1) {
+                    if (res <= 0) {
                         throw new SQLiteException("Failed to update record: " + uri);
                     }
                 }
