@@ -33,4 +33,8 @@
     <!-- messages -->
     <string name="location_saved">Location Saved</string>
     <string name="invalid_location">Invalid Location</string>
+    <string name="failed_to_insert_location">Failed to Insert Location</string>
+    <string name="location_deleted">Location Deleted</string>
+    <string name="failed_to_delete_location">Failed to Delete Location</string>
+    <string name="no_locations_found_error_message">No Locations Found.</string>
 </resources>

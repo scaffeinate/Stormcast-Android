@@ -30,6 +30,10 @@
     <dimen name="fragment_add_location_tab_pills_margin_top">15dp</dimen>
     <dimen name="fragment_add_location_button_padding">20dp</dimen>
 
+    <!-- item_location -->
+    <dimen name="item_location_padding">15dp</dimen>
+    <dimen name="item_location_bg_text_padding">30dp</dimen>
+
     <!-- dialog_color_picker -->
     <dimen name="dialog_color_picker_padding">25dp</dimen>
     <dimen name="dialog_color_picker_grid_margin_top">20dp</dimen>

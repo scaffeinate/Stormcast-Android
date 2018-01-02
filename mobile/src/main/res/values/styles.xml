@@ -35,6 +35,11 @@
         <item name="android:fontFamily">@font/renner_book</item>
     </style>
 
+    <style name="Caption" parent="Body">
+        <item name="android:textSize">@dimen/font_size_caption</item>
+    </style>
+
+
     <style name="Button">
         <item name="android:textSize">@dimen/font_size_button</item>
         <item name="android:fontFamily">@font/renner_medium</item>

@@ -1,7 +1,6 @@
 package stormcast.app.phoenix.io.stormcast.common;
 
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
@@ -155,7 +154,7 @@ public class Location implements Parcelable,
     @Override
     public ContentValues toContentValues() {
         ContentValues cv = new ContentValues();
-        if(this.id != 0){
+        if (this.id != 0) {
             cv.put(LocationEntry._ID, this.id);
         }
         cv.put(LocationEntry.NAME, this.name);
@@ -170,14 +169,9 @@ public class Location implements Parcelable,
     }
 
     @Override
-    public Location fromCursor(Cursor cursor) {
-        LocationBuilder locationBuilder = new LocationBuilder();
-        return locationBuilder.build();
-    }
-
-    @Override
     public boolean isValid() {
-        if (TextUtils.isEmpty(this.getName()) || this.getLatitude() == 0 || this.getLongitude() == 0) {
+        if (TextUtils.isEmpty(this.getName()) || TextUtils.isEmpty(this.getAddress()) ||
+                this.getLatitude() == 0 || this.getLongitude() == 0) {
             return false;
         }
         return true;

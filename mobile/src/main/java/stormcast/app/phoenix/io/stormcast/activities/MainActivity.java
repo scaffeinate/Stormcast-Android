@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import stormcast.app.phoenix.io.stormcast.R;
 import stormcast.app.phoenix.io.stormcast.databinding.ActivityMainBinding;
+import stormcast.app.phoenix.io.stormcast.fragments.EditLocationsFragment;
 import stormcast.app.phoenix.io.stormcast.fragments.ForecastFragment;
 import stormcast.app.phoenix.io.stormcast.views.toolbar.AnimatedActionBarDrawerToggle;
 
@@ -83,6 +84,9 @@ public class MainActivity extends AppCompatActivity
             switch (item.getItemId()) {
                 case R.id.action_forecast:
                     fragment = ForecastFragment.newInstance();
+                    break;
+                case R.id.action_edit_locations:
+                    fragment = EditLocationsFragment.newInstance();
                     break;
             }
 

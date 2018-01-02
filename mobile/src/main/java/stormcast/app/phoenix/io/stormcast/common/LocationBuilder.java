@@ -1,6 +1,10 @@
 package stormcast.app.phoenix.io.stormcast.common;
 
+import android.database.Cursor;
+
 import com.google.android.gms.maps.model.LatLng;
+
+import stormcast.app.phoenix.io.stormcast.data.PersistenceContract.LocationEntry;
 
 /**
  * Created by sudharti on 12/31/17.
@@ -14,8 +18,12 @@ public class LocationBuilder {
     protected String backgroundColor = null, textColor = null;
     protected int unit = Location.UNIT_AUTO, position = 0;
 
-    public LocationBuilder(Location location) {
-        setId(location.getId())
+    public LocationBuilder() {
+    }
+
+    public static LocationBuilder from(Location location) {
+        LocationBuilder locationBuilder = new LocationBuilder();
+        locationBuilder.setId(location.getId())
                 .setName(location.getName())
                 .setAddress(location.getAddress())
                 .setLatitude(location.getLatitude())
@@ -24,10 +32,22 @@ public class LocationBuilder {
                 .setTextColor(location.getTextColor())
                 .setUnit(location.getUnit())
                 .setPosition(location.getPosition());
+        return locationBuilder;
     }
 
-    public LocationBuilder() {
-
+    public static LocationBuilder from(Cursor cursor) {
+        LocationBuilder locationBuilder = new LocationBuilder();
+        locationBuilder
+                .setId(cursor.getInt(cursor.getColumnIndex(LocationEntry._ID)))
+                .setName(cursor.getString(cursor.getColumnIndex(LocationEntry.NAME)))
+                .setAddress(cursor.getString(cursor.getColumnIndex(LocationEntry.ADDRESS)))
+                .setLatitude(cursor.getDouble(cursor.getColumnIndex(LocationEntry.LATITUDE)))
+                .setLongitude(cursor.getDouble(cursor.getColumnIndex(LocationEntry.LONGITUDE)))
+                .setBackgroundColor(cursor.getString(cursor.getColumnIndex(LocationEntry.BG_COLOR)))
+                .setTextColor(cursor.getString(cursor.getColumnIndex(LocationEntry.TEXT_COLOR)))
+                .setUnit(cursor.getInt(cursor.getColumnIndex(LocationEntry.UNIT)))
+                .setPosition(cursor.getInt(cursor.getColumnIndex(LocationEntry.POSITION)));
+        return locationBuilder;
     }
 
     public LocationBuilder setId(int id) {

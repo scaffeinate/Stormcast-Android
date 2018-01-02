@@ -164,10 +164,11 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
                 getArguments().getParcelable(LOCATION));
 
         if (location != null) {
-            mLocationBuilder = new LocationBuilder(location);
+            mLocationBuilder = LocationBuilder.from(location);
             backgroundColor = Color.parseColor(location.getBackgroundColor());
             textColor = Color.parseColor(location.getTextColor());
             selectedUnit = location.getUnit();
+            mBinding.locationEditText.setText(location.getAddress());
             new Handler().post(new Runnable() {
                 @Override
                 public void run() {
@@ -313,15 +314,24 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
     }
 
     private void saveLocation(Location location) {
-        Uri uri = PersistenceContract.LOCATIONS_CONTENT_URI
-                .buildUpon()
-                .build();
         if (getActivity() != null && getActivity().getContentResolver() != null) {
             try {
-                getActivity().getContentResolver().insert(uri, location.toContentValues());
+                if(location.getId() == 0) {
+                    Uri uri = PersistenceContract.LOCATIONS_CONTENT_URI
+                            .buildUpon()
+                            .build();
+                    getActivity().getContentResolver().insert(uri, location.toContentValues());
+                } else {
+                    Uri uri = PersistenceContract.LOCATIONS_CONTENT_URI
+                            .buildUpon()
+                            .appendPath(String.valueOf(location.getId()))
+                            .build();
+                    getActivity().getContentResolver().update(uri, location.toContentValues(), null, null);
+                }
                 Toast.makeText(mContext, getString(R.string.location_saved), Toast.LENGTH_SHORT).show();
                 goBack();
             } catch (UnsupportedOperationException | SQLiteException e) {
+                Toast.makeText(mContext, getString(R.string.failed_to_insert_location), Toast.LENGTH_SHORT).show();
                 Log.e(TAG, " Exception occurred while inserting location: " + e.getMessage());
             }
         }

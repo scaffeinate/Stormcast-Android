@@ -60,7 +60,7 @@ public class LocationsProvider extends ContentProvider {
         Cursor cursor = null;
         switch (match) {
             case LOCATIONS:
-                cursor = db.query(LocationEntry.TABLE_NAME, projection, null,
+                cursor = db.query(LocationEntry.TABLE_NAME, null, null,
                         null, null, null, sortOrder);
                 break;
             case LOCATIONS_WITH_ID:
@@ -136,7 +136,7 @@ public class LocationsProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
+    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String where, @Nullable String[] whereArgs) {
         final SQLiteDatabase db = mDbHelper.getWritableDatabase();
         int match = sUriMatcher.match(uri);
         int res = -1;

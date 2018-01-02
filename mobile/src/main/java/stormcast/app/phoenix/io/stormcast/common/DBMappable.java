@@ -10,6 +10,4 @@ import android.database.Cursor;
 public interface DBMappable<T> {
 
     public ContentValues toContentValues();
-
-    public T fromCursor(Cursor cursor);
 }
