@@ -5,21 +5,27 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import stormcast.app.phoenix.io.stormcast.R;
 import stormcast.app.phoenix.io.stormcast.databinding.ActivityMainBinding;
 import stormcast.app.phoenix.io.stormcast.fragments.ForecastFragment;
+import stormcast.app.phoenix.io.stormcast.views.toolbar.AnimatedActionBarDrawerToggle;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, ToolbarCallbacks, FragmentManager.OnBackStackChangedListener {
 
     private static final String NAV_ITEM_TITLE = "navItemTitle";
     private static final String NAV_ITEM_INDEX = "navItemIndex";
@@ -27,7 +33,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ActivityMainBinding mBinding;
     private FragmentManager mFragmentManager;
 
-    private ActionBarDrawerToggle mDrawerToggle;
+    private ActionBar mActionBar;
+    private AnimatedActionBarDrawerToggle mDrawerToggle;
     private int selectedNavItem = 0;
 
     @Override
@@ -48,12 +55,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             setToolbarTitle(savedInstanceState.getString(NAV_ITEM_TITLE));
             selectedNavItem = savedInstanceState.getInt(NAV_ITEM_INDEX);
         }
+
+        mFragmentManager.addOnBackStackChangedListener(this);
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        invalidateOptionsMenu();
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();
     }
 
@@ -93,18 +101,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setupToolbar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(false);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-
-        mDrawerToggle = new ActionBarDrawerToggle(this, mBinding.drawerLayout, mBinding.toolbar.toolbar, R.string.open, R.string.close);
+        mActionBar = getSupportActionBar();
+        mDrawerToggle = new AnimatedActionBarDrawerToggle(this, mBinding.drawerLayout,
+                mBinding.toolbar.toolbar, R.string.open, R.string.close);
+        mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
         mBinding.drawerLayout.addDrawerListener(mDrawerToggle);
     }
 
-    private void setToolbarTitle(String title) {
+    @Override
+    public void setToolbarTitle(String title) {
         mBinding.toolbar.textViewToolbarTitle.setText(title);
+    }
+
+    @Override
+    public void setToolbarTextColor(int color) {
+        mBinding.toolbar.textViewToolbarTitle.setTextColor(color);
+    }
+
+    @Override
+    public void setToolbarBackgroundColor(int color) {
+        mBinding.toolbar.toolbar.setBackgroundColor(color);
     }
 
     private void closeDrawer() {
@@ -114,5 +135,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mBinding.drawerLayout.closeDrawer(GravityCompat.START);
             }
         });
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        boolean showBackButton  = (mFragmentManager.getBackStackEntryCount() > 0);
+        if(showBackButton) {
+            mDrawerToggle.setDrawerIndicatorEnabled(false);
+            mActionBar.setDisplayHomeAsUpEnabled(true);
+            mDrawerToggle.animateToBackArrow();
+        } else {
+            mActionBar.setDisplayHomeAsUpEnabled(false);
+            mDrawerToggle.animateToMenu();
+            mDrawerToggle.setDrawerIndicatorEnabled(true);
+        }
     }
 }

@@ -2,15 +2,19 @@ package stormcast.app.phoenix.io.stormcast.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteException;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -37,13 +42,15 @@ import java.util.List;
 import java.util.Locale;
 
 import stormcast.app.phoenix.io.stormcast.R;
-import stormcast.app.phoenix.io.stormcast.Stormcast;
+import stormcast.app.phoenix.io.stormcast.activities.ToolbarCallbacks;
 import stormcast.app.phoenix.io.stormcast.common.Location;
 import stormcast.app.phoenix.io.stormcast.common.LocationBuilder;
+import stormcast.app.phoenix.io.stormcast.data.PersistenceContract;
 import stormcast.app.phoenix.io.stormcast.databinding.FragmentAddLocationBinding;
-import stormcast.app.phoenix.io.stormcast.utils.ColorPickerHelper;
+import stormcast.app.phoenix.io.stormcast.utils.FormatUtils;
 import stormcast.app.phoenix.io.stormcast.views.colorpick.MaterialColorPickDialog;
-import stormcast.app.phoenix.io.stormcast.views.tab_pills.TabPills;
+import stormcast.app.phoenix.io.stormcast.views.tab_pills.TabPillsSelector;
+import stormcast.app.phoenix.io.stormcast.views.tab_pills.TabPillsSelector.TabPill;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -55,7 +62,7 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
     private static final String TAG = AddLocationFragment.class.toString();
 
     private static final String LOCATION = "location";
-    private static final String FINISH_ACTIVITY_ON_ACTION = "finishActivityOnAction";
+
     private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 100;
     private static final float TILT = 10f;
     private static final float ZOOM = 12f;
@@ -64,25 +71,25 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
 
     private CameraPosition mCameraPosition;
     private LocationBuilder mLocationBuilder;
-    private MaterialColorPickDialog.Builder mBgColorDialogBuilder;
-    private MaterialColorPickDialog.Builder mTextColorDialogBuilder;
 
-    private int backgroundColor, textColor;
-    private boolean finishActivityOnAction = false;
+    private int selectedUnit, backgroundColor, textColor;
+    private ToolbarCallbacks mToolbarCallbacks;
 
     private Animation fadeInAnimation;
     private FragmentAddLocationBinding mBinding;
+    private TabPill[] mTabPills;
 
-    public static AddLocationFragment newInstance(boolean finishActivityOnAction) {
-        return newInstance(new Location(), finishActivityOnAction);
+    private MaterialColorPickDialog.Builder mBgColorBuilder, mTextColorBuilder;
+
+    public static AddLocationFragment newInstance() {
+        return newInstance(null);
     }
 
-    public static AddLocationFragment newInstance(Location location, boolean finishActivityOnAction) {
+    public static AddLocationFragment newInstance(Location location) {
         AddLocationFragment addLocationFragment = new AddLocationFragment();
 
         Bundle args = new Bundle();
         args.putParcelable(LOCATION, location);
-        args.putBoolean(FINISH_ACTIVITY_ON_ACTION, finishActivityOnAction);
         addLocationFragment.setArguments(args);
 
         return addLocationFragment;
@@ -92,14 +99,12 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getContext();
-
         fadeInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.fade_in);
-
-        mLocationBuilder = new LocationBuilder((Location) getArguments().getParcelable(LOCATION));
-        finishActivityOnAction = getArguments().getBoolean(FINISH_ACTIVITY_ON_ACTION);
-
-        mBgColorDialogBuilder = MaterialColorPickDialog.with(mContext);
-        mTextColorDialogBuilder = MaterialColorPickDialog.with(mContext);
+        mTabPills = new TabPill[]{
+                new TabPill<>(getString(R.string.auto), Location.UNIT_AUTO),
+                new TabPill<>(getString(R.string.imperial), Location.UNIT_IMPERIAL),
+                new TabPill<>(getString(R.string.metric), Location.UNIT_METRIC)
+        };
         setHasOptionsMenu(true);
     }
 
@@ -112,10 +117,33 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
         mBinding.backgroundColorBtn.setOnClickListener(this);
         mBinding.textColorBtn.setOnClickListener(this);
 
-        mBinding.unitsSwitchTabSelector.addTabs(new TabPills.SwitchTab[]{
-                new TabPills.SwitchTab<>("Auto", Location.UNIT_AUTO),
-                new TabPills.SwitchTab<>("Imperial", Location.UNIT_IMPERIAL),
-                new TabPills.SwitchTab<>("Metric", Location.UNIT_METRIC)
+        mBgColorBuilder = MaterialColorPickDialog.with(mContext).build();
+        mTextColorBuilder = MaterialColorPickDialog.with(mContext).build();
+
+        mBgColorBuilder.setOnColorPickedListener(new MaterialColorPickDialog.OnColorPickedListener() {
+            @Override
+            public void onClick(String colorHex) {
+                GradientDrawable drawable = (GradientDrawable) mBinding.backgroundColorBtn.getBackground();
+                drawable.setColor(Color.parseColor(colorHex));
+                mLocationBuilder.setBackgroundColor(colorHex);
+            }
+        });
+
+        mTextColorBuilder.setOnColorPickedListener(new MaterialColorPickDialog.OnColorPickedListener() {
+            @Override
+            public void onClick(String colorHex) {
+                GradientDrawable drawable = (GradientDrawable) mBinding.textColorBtn.getBackground();
+                drawable.setColor(Color.parseColor(colorHex));
+                mLocationBuilder.setTextColor(colorHex);
+            }
+        });
+
+        mBinding.unitsSwitchTabSelector.addTabs(mTabPills);
+        mBinding.unitsSwitchTabSelector.setOnTabClickListener(new TabPillsSelector.OnTabClickListener() {
+            @Override
+            public void onTabClick(int index) {
+                mLocationBuilder.setUnit((Integer) mBinding.unitsSwitchTabSelector.getValueAt(index));
+            }
         });
 
         return mBinding.getRoot();
@@ -125,32 +153,33 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        backgroundColor = Stormcast.DEFAULT_BACKGROUND_COLOR;
-        textColor = Stormcast.DEFAULT_TEXT_COLOR;
+        mToolbarCallbacks = (ToolbarCallbacks) getActivity();
+        mToolbarCallbacks.setToolbarTitle(getString(R.string.add_location));
 
-        if (savedInstanceState != null) {
-            final Location restored = savedInstanceState.getParcelable(LOCATION);
+        selectedUnit = Location.UNIT_AUTO;
+        backgroundColor = ContextCompat.getColor(mContext, R.color.colorPrimary);
+        textColor = ContextCompat.getColor(mContext, R.color.textColorLight);
 
-            backgroundColor = Color.parseColor(restored.getBackgroundColor());
-            textColor = Color.parseColor(restored.getTextColor());
+        final Location location = (Location) ((savedInstanceState != null) ? savedInstanceState.getParcelable(LOCATION) :
+                getArguments().getParcelable(LOCATION));
 
-            mLocationBuilder.setName(restored.getName())
-                    .setAddress(restored.getAddress())
-                    .setLatitude(restored.getLatitude())
-                    .setLongitude(restored.getLongitude())
-                    .setBackgroundColor(restored.getBackgroundColor())
-                    .setTextColor(restored.getTextColor())
-                    .setUnit(restored.getUnit());
-
-            new Handler().postDelayed(new Runnable() {
+        if (location != null) {
+            mLocationBuilder = new LocationBuilder(location);
+            backgroundColor = Color.parseColor(location.getBackgroundColor());
+            textColor = Color.parseColor(location.getTextColor());
+            selectedUnit = location.getUnit();
+            new Handler().post(new Runnable() {
                 @Override
                 public void run() {
-                    addMarker(new LatLng(restored.getLatitude(), restored.getLongitude()));
+                    addMarker(new LatLng(location.getLatitude(), location.getLongitude()));
                 }
-            }, 250);
+            });
+        } else {
+            mLocationBuilder = new LocationBuilder();
+            mLocationBuilder.setBackgroundColor(FormatUtils.convertColorToHex(backgroundColor))
+                    .setTextColor(FormatUtils.convertColorToHex(textColor))
+                    .setUnit(selectedUnit);
         }
-
-        //mToolbarCallbacks.setToolbarTitle("Add Location");
 
         GradientDrawable drawable = (GradientDrawable) mBinding.backgroundColorBtn.getBackground();
         drawable.setColor(backgroundColor);
@@ -158,7 +187,14 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
         drawable = (GradientDrawable) mBinding.textColorBtn.getBackground();
         drawable.setColor(textColor);
 
-        mBinding.locationMapView.postDelayed(new Runnable() {
+        for (int i = 0; i < mTabPills.length; i++) {
+            if (((Integer) mTabPills[i].getValue()).intValue() == selectedUnit) {
+                mBinding.unitsSwitchTabSelector.setSelectedIndex(i);
+                break;
+            }
+        }
+
+        mBinding.locationMapView.post(new Runnable() {
             @Override
             public void run() {
                 mBinding.locationMapView.onCreate(savedInstanceState);
@@ -166,7 +202,7 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
                 mBinding.locationMapView.onResume();
                 mBinding.locationMapView.startAnimation(fadeInAnimation);
             }
-        }, 500);
+        });
     }
 
     @Override
@@ -179,10 +215,12 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save_location_menu_item:
-                mLocationBuilder.setUnit((Integer) mBinding.unitsSwitchTabSelector.getSelectedValue());
-                return true;
-            case android.R.id.home:
-                goBack();
+                Location location = mLocationBuilder.build();
+                if (location.isValid()) {
+                    saveLocation(location);
+                } else {
+                    Toast.makeText(mContext, getString(R.string.invalid_location), Toast.LENGTH_SHORT).show();
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -225,24 +263,10 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
                 }
                 break;
             case R.id.background_color_btn:
-                ColorPickerHelper.showColorPicker(mBgColorDialogBuilder, null, new ColorPickerHelper.ColorPickerCallback() {
-                    @Override
-                    public void onColorSelected(String colorHex) {
-                        GradientDrawable drawable = (GradientDrawable) mBinding.backgroundColorBtn.getBackground();
-                        drawable.setColor(Color.parseColor(colorHex));
-                        mLocationBuilder.setBackgroundColor(colorHex);
-                    }
-                });
+                mBgColorBuilder.show();
                 break;
             case R.id.text_color_btn:
-                ColorPickerHelper.showColorPicker(mTextColorDialogBuilder, null, new ColorPickerHelper.ColorPickerCallback() {
-                    @Override
-                    public void onColorSelected(String colorHex) {
-                        GradientDrawable drawable = (GradientDrawable) mBinding.textColorBtn.getBackground();
-                        drawable.setColor(Color.parseColor(colorHex));
-                        mLocationBuilder.setTextColor(colorHex);
-                    }
-                });
+                mTextColorBuilder.show();
                 break;
         }
     }
@@ -282,17 +306,28 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
                     builder.append(",").append(adminArea);
                 }
             } catch (IOException e) {
-
+                Log.e(TAG, " Exception occurred while trying to decode address: " + e.getMessage());
             }
         }
         return builder.toString();
     }
 
-    private void goBack() {
-        if (finishActivityOnAction) {
-            getActivity().finish();
-        } else {
-            getFragmentManager().popBackStack();
+    private void saveLocation(Location location) {
+        Uri uri = PersistenceContract.LOCATIONS_CONTENT_URI
+                .buildUpon()
+                .build();
+        if (getActivity() != null && getActivity().getContentResolver() != null) {
+            try {
+                getActivity().getContentResolver().insert(uri, location.toContentValues());
+                Toast.makeText(mContext, getString(R.string.location_saved), Toast.LENGTH_SHORT).show();
+                goBack();
+            } catch (UnsupportedOperationException | SQLiteException e) {
+                Log.e(TAG, " Exception occurred while inserting location: " + e.getMessage());
+            }
         }
+    }
+
+    private void goBack() {
+        getFragmentManager().popBackStack();
     }
 }

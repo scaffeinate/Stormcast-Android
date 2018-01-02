@@ -16,14 +16,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/selector_edit_text"
-                android:drawablePadding="15dp"
+                android:drawablePadding="@dimen/fragment_add_location_edit_text_drawable_padding"
                 android:drawableRight="@drawable/ic_search"
                 android:focusableInTouchMode="false"
                 android:hint="@string/enter_location_name"
                 android:inputType="none"
-                android:textColor="@color/textColorDark"
-                android:textColorHint="@color/textColorDarkHint"
-                android:textSize="@dimen/font_size_body">
+                android:textAppearance="@style/Body"
+                android:textColorHint="@color/textColorDarkHint">
 
                 <requestFocus />
             </EditText>
@@ -45,8 +44,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/fragment_add_location_text_view_margin_top"
                 android:text="@string/customize"
-                android:textColor="@color/textColorDark"
-                android:textSize="@dimen/font_size_subheading" />
+                android:textAppearance="@style/SubHeading" />
 
             <Button
                 android:id="@+id/background_color_btn"
@@ -54,10 +52,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/customize_text_view"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="@dimen/fragment_add_location_button_margin_top"
                 android:background="@drawable/shape_rounded_corners"
-                android:padding="22dp"
+                android:padding="@dimen/fragment_add_location_button_padding"
                 android:text="@string/background_color"
+                android:textAppearance="@style/Button"
                 android:textColor="@color/textColorLight" />
 
             <Button
@@ -69,8 +68,9 @@
                 android:layout_marginTop="@dimen/fragment_add_location_button_margin_top"
                 android:background="@drawable/shape_rounded_corners"
                 android:elevation="0dp"
-                android:padding="22dp"
+                android:padding="@dimen/fragment_add_location_button_padding"
                 android:text="@string/text_color"
+                android:textAppearance="@style/Button"
                 android:textColor="@color/textColorDark" />
 
             <TextView
@@ -81,10 +81,9 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/fragment_add_location_text_view_margin_top"
                 android:text="@string/units"
-                android:textColor="@color/textColorDark"
-                android:textSize="@dimen/font_size_subheading" />
+                android:textAppearance="@style/SubHeading" />
 
-            <stormcast.app.phoenix.io.stormcast.views.tab_pills.TabPills
+            <stormcast.app.phoenix.io.stormcast.views.tab_pills.TabPillsSelector
                 android:id="@+id/units_switch_tab_selector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

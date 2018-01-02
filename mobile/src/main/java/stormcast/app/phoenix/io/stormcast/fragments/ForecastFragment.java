@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import stormcast.app.phoenix.io.stormcast.R;
+import stormcast.app.phoenix.io.stormcast.activities.ToolbarCallbacks;
 import stormcast.app.phoenix.io.stormcast.databinding.FragmentHomeBinding;
 
 /**
@@ -21,6 +22,7 @@ public class ForecastFragment extends Fragment implements View.OnClickListener {
 
     private FragmentHomeBinding mBinding;
     private FragmentManager mFragmentManager;
+    private ToolbarCallbacks mToolbarCallbacks;
 
     public static ForecastFragment newInstance() {
         return new ForecastFragment();
@@ -44,11 +46,24 @@ public class ForecastFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mToolbarCallbacks = (ToolbarCallbacks) getActivity();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mToolbarCallbacks.setToolbarTitle(getString(R.string.action_forecast));
+    }
+
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_add_location:
                 mFragmentManager.beginTransaction()
-                        .replace(R.id.layout_content, AddLocationFragment.newInstance(false))
+                        .replace(R.id.layout_content, AddLocationFragment.newInstance())
+                        .addToBackStack(null)
                         .commit();
                 break;
         }

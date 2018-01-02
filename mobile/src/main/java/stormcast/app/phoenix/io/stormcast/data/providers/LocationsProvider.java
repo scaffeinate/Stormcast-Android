@@ -97,7 +97,7 @@ public class LocationsProvider extends ContentProvider {
         switch (match) {
             case LOCATIONS:
                 if (contentValues != null) {
-                    db.insert(LocationEntry.TABLE_NAME, null, contentValues);
+                    res = db.insert(LocationEntry.TABLE_NAME, null, contentValues);
                     if (res == -1) {
                         throw new SQLiteException("Failed to insert record: " + uri);
                     }
