@@ -1,26 +1,30 @@
 package stormcast.app.phoenix.io.stormcast.common;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
-import stormcast.app.phoenix.io.stormcast.Stormcast;
+import stormcast.app.phoenix.io.stormcast.data.PersistenceContract.LocationEntry;
 
 /**
  * Created by sudharti on 12/31/17.
  */
 
-public class Location implements Parcelable {
+public class Location implements Parcelable,
+        DBMappable<Location>, Validatable {
     public static final int UNIT_AUTO = 0;
     public static final int UNIT_IMPERIAL = 1;
     public static final int UNIT_METRIC = 2;
 
-    private String name, address, backgroundColor = Stormcast.DEFAULT_BACKGROUND_COLOR_HEX,
-            textColor = Stormcast.DEFAULT_TEXT_COLOR_HEX;
+    private String name, address, backgroundColor, textColor;
 
     private double latitude = 0, longitude = 0;
     private int id = 0, unit = UNIT_AUTO, position = 0;
 
-    public Location() {}
+    public Location() {
+    }
 
     protected Location(Parcel in) {
         name = in.readString();
@@ -146,5 +150,36 @@ public class Location implements Parcelable {
         parcel.writeInt(id);
         parcel.writeInt(unit);
         parcel.writeInt(position);
+    }
+
+    @Override
+    public ContentValues toContentValues() {
+        ContentValues cv = new ContentValues();
+        if(this.id != 0){
+            cv.put(LocationEntry._ID, this.id);
+        }
+        cv.put(LocationEntry.NAME, this.name);
+        cv.put(LocationEntry.ADDRESS, this.address);
+        cv.put(LocationEntry.BG_COLOR, this.backgroundColor);
+        cv.put(LocationEntry.TEXT_COLOR, this.textColor);
+        cv.put(LocationEntry.LATITUDE, this.latitude);
+        cv.put(LocationEntry.LONGITUDE, this.longitude);
+        cv.put(LocationEntry.UNIT, this.unit);
+        cv.put(LocationEntry.POSITION, this.position);
+        return cv;
+    }
+
+    @Override
+    public Location fromCursor(Cursor cursor) {
+        LocationBuilder locationBuilder = new LocationBuilder();
+        return locationBuilder.build();
+    }
+
+    @Override
+    public boolean isValid() {
+        if (TextUtils.isEmpty(this.getName()) || this.getLatitude() == 0 || this.getLongitude() == 0) {
+            return false;
+        }
+        return true;
     }
 }

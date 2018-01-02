@@ -22,8 +22,12 @@ public class LocationBuilder {
                 .setLongitude(location.getLongitude())
                 .setBackgroundColor(location.getBackgroundColor())
                 .setTextColor(location.getTextColor())
-                .setUnit(location.getPosition())
+                .setUnit(location.getUnit())
                 .setPosition(location.getPosition());
+    }
+
+    public LocationBuilder() {
+
     }
 
     public LocationBuilder setId(int id) {
