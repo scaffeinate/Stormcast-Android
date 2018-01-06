@@ -1,9 +1,12 @@
 package stormcast.app.phoenix.io.stormcast.common;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
+
+import org.xml.sax.helpers.LocatorImpl;
 
 import stormcast.app.phoenix.io.stormcast.data.PersistenceContract.LocationEntry;
 

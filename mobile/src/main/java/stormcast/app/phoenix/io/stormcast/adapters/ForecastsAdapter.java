@@ -1,32 +1,26 @@
 package stormcast.app.phoenix.io.stormcast.adapters;
 
 import android.database.Cursor;
-import android.support.v4.view.MotionEventCompat;
+import android.graphics.Color;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import stormcast.app.phoenix.io.stormcast.R;
 import stormcast.app.phoenix.io.stormcast.common.Location;
-import stormcast.app.phoenix.io.stormcast.views.drag_drop_list.OnStartDragListener;
+import stormcast.app.phoenix.io.stormcast.common.LocationBuilder;
 
 /**
  * Created by sudhar on 8/15/17.
  */
-public class ForecastsAdapter extends RecyclerView.Adapter<LocationsListAdapter.ViewHolder> {
+public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.ViewHolder> {
 
     private Cursor mCursor = null;
     private OnItemClickHandler mOnItemClickHandler;
 
-    public LocationsListAdapter(OnItemClickHandler onItemClickHandler) {
+    public ForecastsAdapter(OnItemClickHandler onItemClickHandler) {
         this.mOnItemClickHandler = onItemClickHandler;
     }
 
@@ -34,7 +28,7 @@ public class ForecastsAdapter extends RecyclerView.Adapter<LocationsListAdapter.
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_forecast, parent, false);
-        return new ViewHolder(view);
+        return new ViewHolder(parent, view);
     }
 
     @Override
@@ -63,7 +57,9 @@ public class ForecastsAdapter extends RecyclerView.Adapter<LocationsListAdapter.
         }
 
         protected void bind(int position) {
-            Location location = mLocationList.get(position);
+            mCursor.moveToPosition(position);
+            Location location = LocationBuilder.from(mCursor).build();
+            this.itemView.setBackgroundColor(Color.parseColor(location.getBackgroundColor()));
         }
 
         @Override
