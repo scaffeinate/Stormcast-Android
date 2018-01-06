@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Stormcast-Android.iml" filepath="$PROJECT_DIR$/Stormcast-Android.iml" />
       <module fileurl="file://$PROJECT_DIR$/Stormcast2.iml" filepath="$PROJECT_DIR$/Stormcast2.iml" />
       <module fileurl="file://$PROJECT_DIR$/mobile/mobile.iml" filepath="$PROJECT_DIR$/mobile/mobile.iml" />
       <module fileurl="file://$PROJECT_DIR$/wear/wear.iml" filepath="$PROJECT_DIR$/wear/wear.iml" />

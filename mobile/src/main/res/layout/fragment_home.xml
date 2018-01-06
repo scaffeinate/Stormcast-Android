@@ -2,19 +2,43 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view_forecasts"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/text_view_error_message"
+            style="@style/Caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="@string/no_locations_found_error_message"
+            android:visibility="invisible" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar_loading"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="@dimen/progress_bar_size"
+            android:layout_height="@dimen/progress_bar_size"
+            android:layout_centerInParent="true" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/btn_add_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right|end"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
             android:layout_margin="@dimen/fragment_home_btn_add_margin"
             android:clickable="true"
             android:src="@drawable/ic_plus_white_24dp"
             app:fabSize="normal"
             app:rippleColor="@color/colorPrimary" />
-    </FrameLayout>
+    </RelativeLayout>
 </layout>

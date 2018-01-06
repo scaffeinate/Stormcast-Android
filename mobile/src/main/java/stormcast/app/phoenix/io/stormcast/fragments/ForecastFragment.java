@@ -13,16 +13,25 @@ import android.view.ViewGroup;
 import stormcast.app.phoenix.io.stormcast.R;
 import stormcast.app.phoenix.io.stormcast.activities.ToolbarCallbacks;
 import stormcast.app.phoenix.io.stormcast.databinding.FragmentHomeBinding;
+import stormcast.app.phoenix.io.stormcast.data.PersistenceContract;
+import stormcast.app.phoenix.io.stormcast.loaders.CursorLoaderCallbacks;
+
+import static stormcast.app.phoenix.io.stormcast.Stormcast.LOCATIONS_LOADER_ID;
 
 /**
  * Created by sudharti on 12/31/17.
  */
 
-public class ForecastFragment extends Fragment implements View.OnClickListener {
+public class ForecastFragment extends Fragment implements View.OnClickListener, CursorLoaderCallbacks.ContentLoaderCallbacks {
 
+    private Cursor mCursor;
     private FragmentHomeBinding mBinding;
     private FragmentManager mFragmentManager;
+
     private ToolbarCallbacks mToolbarCallbacks;
+    private CursorLoaderCallbacks mCursorLoaderCallbacks;
+    
+    private ForecastsAdapter mAdapter;
 
     public static ForecastFragment newInstance() {
         return new ForecastFragment();
@@ -31,6 +40,7 @@ public class ForecastFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mCursorLoaderCallbacks = new CursorLoaderCallbacks(mContext, this);
     }
 
     @Nullable
@@ -42,6 +52,8 @@ public class ForecastFragment extends Fragment implements View.OnClickListener {
 
         mBinding.btnAddLocation.setOnClickListener(this);
 
+        mAdapter = new ForecastsAdapter(this);
+
         return mBinding.getRoot();
     }
 
@@ -49,12 +61,13 @@ public class ForecastFragment extends Fragment implements View.OnClickListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mToolbarCallbacks = (ToolbarCallbacks) getActivity();
+        mToolbarCallbacks.setToolbarTitle(getString(R.string.action_forecast));
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mToolbarCallbacks.setToolbarTitle(getString(R.string.action_forecast));
+        fetchLocations();
     }
 
     @Override
@@ -67,5 +80,40 @@ public class ForecastFragment extends Fragment implements View.OnClickListener {
                         .commit();
                 break;
         }
+    }
+    
+    @Override
+    public void onLoadFinished(Loader loader, Cursor cursor) {
+        switch (loader.getId()) {
+            case LOCATIONS_LOADER_ID:
+                if (cursor == null || cursor.getCount() <= 0) {
+                    showErrorMessage();
+                } else {
+                    mCursor = cursor;
+                    mAdapter.swapCursor(cursor);
+                    showRecyclerView();
+                }
+                break;
+        }
+    }    
+    
+    private void fetchLocations() {
+        Bundle args = new Bundle();
+        args.putParcelable(CursorLoaderCallbacks.URI_EXTRA, PersistenceContract.LOCATIONS_CONTENT_URI);
+        if (mLoaderManager != null) {
+            mLoaderManager.restartLoader(LOCATIONS_LOADER_ID, args, mCursorLoaderCallbacks);
+        }
+    }
+    
+    private void showRecyclerView() {
+        mBinding.recyclerViewForecasts.setVisibility(View.VISIBLE);
+        mBinding.progressBarLoading.setVisibility(View.GONE);
+        mBinding.textViewErrorMessage.setVisibility(View.GONE);
+    }
+
+    private void showErrorMessage() {
+        mBinding.progressBarLoading.setVisibility(View.GONE);
+        mBinding.recyclerViewForecasts.setVisibility(View.GONE);
+        mBinding.textViewErrorMessage.setVisibility(View.VISIBLE);
     }
 }
