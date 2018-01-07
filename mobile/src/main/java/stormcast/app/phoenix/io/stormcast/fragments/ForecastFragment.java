@@ -61,7 +61,7 @@ public class ForecastFragment extends Fragment implements View.OnClickListener, 
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
 
         mAdapter = new ForecastsAdapter(this);
-        mLayoutManager = new GridLayoutManager(mContext, 2);
+        mLayoutManager = new GridLayoutManager(mContext, 1);
 
         mBinding.recyclerViewForecasts.setAdapter(mAdapter);
         mBinding.recyclerViewForecasts.setLayoutManager(mLayoutManager);

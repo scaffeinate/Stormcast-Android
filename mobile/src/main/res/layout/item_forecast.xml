@@ -1,6 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_margin="10dp"
-    android:layout_height="200dp">
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/item_forecast_margin"
+    android:background="@drawable/shape_rounded_corners"
+    android:padding="@dimen/item_forecast_padding">
+
+    <TextView
+        android:id="@+id/text_view_location_name"
+        style="@style/SubHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" />
+
+    <TextView
+        android:id="@+id/text_view_summary"
+        style="@style/Body"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/text_view_location_name" />
+
+    <TextView
+        android:id="@+id/text_view_temperature"
+        style="@style/Display"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/text_view_summary" />
+
+    <com.github.pwittchen.weathericonview.WeatherIconView
+        android:id="@+id/weather_icon_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        custom:weatherIconResource="@string/wi_forecast_io_snow"
+        custom:weatherIconSize="50" />
 </RelativeLayout>

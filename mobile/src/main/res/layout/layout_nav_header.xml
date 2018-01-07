@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/nav_drawer_header_height"
-    android:background="@color/colorAccentLight"
+    android:background="@color/colorAccent"
     tools:ignore="Overdraw">
 
     <ImageView
@@ -16,5 +16,5 @@
         android:contentDescription="@string/logo_image"
         android:scaleType="centerCrop"
         android:tint="@android:color/white"
-        app:srcCompat="@drawable/ic_weather_sunny_white_24dp" />
+        app:srcCompat="@drawable/ic_weather_lightning_white_24dp" />
 </RelativeLayout>

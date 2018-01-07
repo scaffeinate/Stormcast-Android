@@ -22,6 +22,10 @@
         <item name="android:textColor">@color/textColorDark</item>
     </style>
 
+    <style name="ExtraLarge" parent="Display">
+        <item name="android:textSize">60sp</item>
+    </style>
+
     <style name="Title" parent="Display">
         <item name="android:textSize">@dimen/font_size_title</item>
     </style>
