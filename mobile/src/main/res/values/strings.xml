@@ -24,6 +24,10 @@
     <string name="metric">Metric</string>
     <string name="add_location">Add Location</string>
 
+    <!-- item_forecast -->
+    <string name="dash">27°C</string>
+    <string name="clear">Clear</string>
+
     <!-- dialog_color_picker -->
     <string name="pick_a_color">Pick a color</string>
 

@@ -16,6 +16,7 @@ import java.util.List;
 
 import stormcast.app.phoenix.io.stormcast.data.DbHelper;
 import stormcast.app.phoenix.io.stormcast.data.PersistenceContract;
+import stormcast.app.phoenix.io.stormcast.data.PersistenceContract.ForecastEntry;
 import stormcast.app.phoenix.io.stormcast.data.PersistenceContract.LocationEntry;
 
 /**
@@ -27,6 +28,8 @@ public class LocationsProvider extends ContentProvider {
     private static final int LOCATIONS = 100;
 
     private static final int LOCATIONS_WITH_ID = 101;
+
+    private static final int LOCATIONS_WITH_FORECAST = 102;
 
     private static final UriMatcher sUriMatcher = builderUriMatcher();
 
@@ -41,6 +44,7 @@ public class LocationsProvider extends ContentProvider {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(PersistenceContract.LOCATIONS_AUTHORITY, PersistenceContract.LOCATIONS_PATH, LOCATIONS);
         uriMatcher.addURI(PersistenceContract.LOCATIONS_AUTHORITY, PersistenceContract.LOCATIONS_PATH + "/#/", LOCATIONS_WITH_ID);
+        uriMatcher.addURI(PersistenceContract.LOCATIONS_AUTHORITY, PersistenceContract.LOCATIONS_WITH_FORECAST_PATH, LOCATIONS_WITH_FORECAST);
         return uriMatcher;
     }
 
@@ -62,6 +66,15 @@ public class LocationsProvider extends ContentProvider {
             case LOCATIONS:
                 cursor = db.query(LocationEntry.TABLE_NAME, null, null,
                         null, null, null, LocationEntry.POSITION);
+                break;
+            case LOCATIONS_WITH_FORECAST:
+                String rawQuery = " SELECT " + LocationEntry.TABLE_NAME + ".*, "
+                        + ForecastEntry.TABLE_NAME + ".* "
+                        + " FROM " + LocationEntry.TABLE_NAME + " LEFT JOIN " + ForecastEntry.TABLE_NAME
+                        + " ON " + LocationEntry.TABLE_NAME + "." + LocationEntry._ID + EQUAL_TO
+                        + ForecastEntry.TABLE_NAME + "." + ForecastEntry.LOCATION_ID
+                        + " ORDER BY " + LocationEntry.TABLE_NAME + "." + LocationEntry.POSITION;
+                cursor = db.rawQuery(rawQuery, null);
                 break;
             case LOCATIONS_WITH_ID:
                 List<String> pathSegments = uri.getPathSegments();

@@ -1,29 +1,34 @@
 package stormcast.app.phoenix.io.stormcast.adapters;
 
-import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.pwittchen.weathericonview.WeatherIconView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import stormcast.app.phoenix.io.stormcast.R;
-import stormcast.app.phoenix.io.stormcast.common.Location;
-import stormcast.app.phoenix.io.stormcast.common.LocationBuilder;
+import stormcast.app.phoenix.io.stormcast.common.local.Forecast;
+import stormcast.app.phoenix.io.stormcast.common.local.Location;
+import stormcast.app.phoenix.io.stormcast.common.local.LocationForecast;
 
 /**
  * Created by sudhar on 8/15/17.
  */
 public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.ViewHolder> {
 
-    private Cursor mCursor = null;
+    private List<LocationForecast> mLocationForecastList = null;
     private OnItemClickHandler mOnItemClickHandler;
 
     public ForecastsAdapter(OnItemClickHandler onItemClickHandler) {
+        this.mLocationForecastList = new ArrayList<>();
         this.mOnItemClickHandler = onItemClickHandler;
     }
 
@@ -32,7 +37,6 @@ public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.View
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_forecast, parent, false);
         ViewHolder viewHolder = new ViewHolder(parent, view);
-        viewHolder.adjustPosterHeight(parent.getMeasuredHeight());
         return viewHolder;
     }
 
@@ -43,11 +47,11 @@ public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.View
 
     @Override
     public int getItemCount() {
-        return (this.mCursor == null) ? 0 : (this.mCursor.getCount());
+        return this.mLocationForecastList.size();
     }
 
-    public void swapCursor(Cursor cursor) {
-        this.mCursor = cursor;
+    public void setLocationForecastList(List<LocationForecast> locationList) {
+        this.mLocationForecastList = locationList;
         notifyDataSetChanged();
     }
 
@@ -57,7 +61,11 @@ public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.View
         private final TextView mLocationNameTextView;
         private final TextView mTemperatureTextView;
         private final TextView mSummaryTextView;
+        private final TextView mMinTemperatureTextView;
+        private final TextView mMaxTemperatureTextView;
         private final WeatherIconView mWeatherIconView;
+        private final ImageView mIconMinTemperatureImageView;
+        private final ImageView mIconMaxTemperatureImageView;
 
         public ViewHolder(ViewGroup parent, View itemView) {
             super(itemView);
@@ -66,38 +74,50 @@ public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.View
 
             this.mLocationNameTextView = itemView.findViewById(R.id.text_view_location_name);
             this.mTemperatureTextView = itemView.findViewById(R.id.text_view_temperature);
+            this.mMinTemperatureTextView = itemView.findViewById(R.id.text_view_min_temperature);
+            this.mMaxTemperatureTextView = itemView.findViewById(R.id.text_view_max_temperature);
             this.mSummaryTextView = itemView.findViewById(R.id.text_view_summary);
             this.mWeatherIconView = itemView.findViewById(R.id.weather_icon_view);
+            this.mIconMinTemperatureImageView = itemView.findViewById(R.id.icon_min_temperature);
+            this.mIconMaxTemperatureImageView = itemView.findViewById(R.id.icon_max_temperature);
         }
 
         protected void bind(int position) {
-            mCursor.moveToPosition(position);
-            Location location = LocationBuilder.from(mCursor).build();
-            int backgroundColor = Color.parseColor(location.getBackgroundColor());
-            int textColor = Color.parseColor(location.getTextColor());
+            LocationForecast locationForecast = mLocationForecastList.get(position);
 
-            GradientDrawable drawable = (GradientDrawable) itemView.getBackground().mutate();
-            drawable.setColor(backgroundColor);
+            Location location = locationForecast.getLocation();
+            Forecast forecast = locationForecast.getForecast();
+            if (location != null) {
+                int backgroundColor = Color.parseColor(location.getBackgroundColor());
+                int textColor = Color.parseColor(location.getTextColor());
 
-            this.mLocationNameTextView.setTextColor(textColor);
-            this.mTemperatureTextView.setTextColor(textColor);
-            this.mSummaryTextView.setTextColor(textColor);
-            this.mWeatherIconView.setIconColor(textColor);
+                GradientDrawable drawable = (GradientDrawable) itemView.getBackground().mutate();
+                drawable.setColor(backgroundColor);
 
-            this.mLocationNameTextView.setText(location.getName());
-            this.mTemperatureTextView.setText("27\u00b0F");
-            this.mSummaryTextView.setText("Clear");
+                this.mLocationNameTextView.setTextColor(textColor);
+                this.mTemperatureTextView.setTextColor(textColor);
+                this.mSummaryTextView.setTextColor(textColor);
+                this.mMinTemperatureTextView.setTextColor(textColor);
+                this.mMaxTemperatureTextView.setTextColor(textColor);
+                this.mIconMinTemperatureImageView.setColorFilter(textColor);
+                this.mIconMaxTemperatureImageView.setColorFilter(textColor);
+                this.mWeatherIconView.setIconColor(textColor);
 
+                this.mLocationNameTextView.setText(location.getName());
+
+                if (forecast != null && forecast.getId() != 0) {
+                    this.mTemperatureTextView.setText((int) forecast.getTemperature() + "F");
+                    this.mMinTemperatureTextView.setText((int) forecast.getMinTemperature() + "F");
+                    this.mMaxTemperatureTextView.setText((int) forecast.getMaxTemperature() + "F");
+                    this.mSummaryTextView.setText(forecast.getSummary());
+                }
+            }
         }
 
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition();
             ForecastsAdapter.this.mOnItemClickHandler.onItemClicked(mParent, view, position);
-        }
-
-        public void adjustPosterHeight(int height) {
-            itemView.setMinimumHeight(height / 4);
         }
     }
 }

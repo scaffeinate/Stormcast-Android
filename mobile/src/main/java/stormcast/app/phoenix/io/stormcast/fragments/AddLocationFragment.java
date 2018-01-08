@@ -43,8 +43,8 @@ import java.util.Locale;
 
 import stormcast.app.phoenix.io.stormcast.R;
 import stormcast.app.phoenix.io.stormcast.activities.ToolbarCallbacks;
-import stormcast.app.phoenix.io.stormcast.common.Location;
-import stormcast.app.phoenix.io.stormcast.common.LocationBuilder;
+import stormcast.app.phoenix.io.stormcast.common.local.Location;
+import stormcast.app.phoenix.io.stormcast.common.local.LocationBuilder;
 import stormcast.app.phoenix.io.stormcast.data.PersistenceContract;
 import stormcast.app.phoenix.io.stormcast.databinding.FragmentAddLocationBinding;
 import stormcast.app.phoenix.io.stormcast.utils.FormatUtils;

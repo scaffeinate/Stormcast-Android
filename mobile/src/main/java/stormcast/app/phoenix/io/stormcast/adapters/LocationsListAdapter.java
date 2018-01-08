@@ -1,6 +1,5 @@
 package stormcast.app.phoenix.io.stormcast.adapters;
 
-import android.database.Cursor;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import stormcast.app.phoenix.io.stormcast.R;
-import stormcast.app.phoenix.io.stormcast.common.Location;
+import stormcast.app.phoenix.io.stormcast.common.local.Location;
 import stormcast.app.phoenix.io.stormcast.views.drag_drop_list.OnStartDragListener;
 
 /**
