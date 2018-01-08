@@ -1,4 +1,4 @@
-package stormcast.app.phoenix.io.stormcast.common;
+package stormcast.app.phoenix.io.stormcast.common.local;
 
 import android.database.Cursor;
 
@@ -13,8 +13,7 @@ import stormcast.app.phoenix.io.stormcast.data.PersistenceContract.LocationEntry
 public class LocationBuilder {
     protected int id;
     protected String name, address;
-    protected double latitude = -1;
-    protected double longitude = -1;
+    protected double latitude = 0, longitude = 0;
     protected String backgroundColor = null, textColor = null;
     protected int unit = Location.UNIT_AUTO, position = 0;
 

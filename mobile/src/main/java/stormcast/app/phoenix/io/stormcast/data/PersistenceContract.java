@@ -19,11 +19,18 @@ public class PersistenceContract {
 
     public static final String LOCATIONS_PATH = "locations";
 
+    public static final String LOCATIONS_WITH_FORECAST_PATH = "locations_forecast";
+
     public static final String FORECAST_PATH = "forecast";
 
     public static final Uri LOCATIONS_CONTENT_URI = Uri.parse("content://" + LOCATIONS_AUTHORITY)
             .buildUpon()
             .appendPath(LOCATIONS_PATH)
+            .build();
+
+    public static final Uri LOCATIONS_FORECAST_CONTENT_URI = Uri.parse("content://" + LOCATIONS_AUTHORITY)
+            .buildUpon()
+            .appendPath(LOCATIONS_WITH_FORECAST_PATH)
             .build();
 
     public static final Uri FORECAST_CONTENT_URI = Uri.parse("content://" + FORECAST_AUTHORITY)
