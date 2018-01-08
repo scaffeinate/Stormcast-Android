@@ -103,7 +103,6 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
         mContext = getContext();
         fadeInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.fade_in);
         mTabPills = new TabPill[]{
-                new TabPill<>(getString(R.string.auto), Unit.AUTO),
                 new TabPill<>(getString(R.string.imperial), Unit.IMPERIAL),
                 new TabPill<>(getString(R.string.metric), Unit.METRIC)
         };
@@ -158,7 +157,7 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
         mToolbarCallbacks = (ToolbarCallbacks) getActivity();
         mToolbarCallbacks.setToolbarTitle(getString(R.string.add_location));
 
-        selectedUnit = Unit.AUTO;
+        selectedUnit = Unit.IMPERIAL;
         backgroundColor = ContextCompat.getColor(mContext, R.color.colorPrimary);
         textColor = ContextCompat.getColor(mContext, R.color.textColorLight);
 
@@ -191,13 +190,13 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
         drawable.setColor(textColor);
 
         for (int i = 0; i < mTabPills.length; i++) {
-            if (((String) mTabPills[i].getValue()).equals(selectedUnit)) {
+            if ((mTabPills[i].getValue()).equals(selectedUnit)) {
                 mBinding.unitsSwitchTabSelector.setSelectedIndex(i);
                 break;
             }
         }
 
-        mBinding.locationMapView.post(new Runnable() {
+        mBinding.locationMapView.postDelayed(new Runnable() {
             @Override
             public void run() {
                 mBinding.locationMapView.onCreate(savedInstanceState);
@@ -205,7 +204,7 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
                 mBinding.locationMapView.onResume();
                 mBinding.locationMapView.startAnimation(fadeInAnimation);
             }
-        });
+        }, 500);
     }
 
     @Override

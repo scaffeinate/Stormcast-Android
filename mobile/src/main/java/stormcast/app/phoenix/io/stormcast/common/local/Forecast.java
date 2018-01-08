@@ -389,7 +389,7 @@ public class Forecast implements Parcelable, DBMappable {
         Unit unit = new Unit(unitType);
 
         Calendar currentTime = Calendar.getInstance();
-        currentTime.setTimeInMillis((long) this.getCurrentTime() * 1000);
+        currentTime.setTimeInMillis(this.getCurrentTime() * 1000);
         int hourOfDay = currentTime.get(Calendar.HOUR_OF_DAY);
         boolean isDay = (hourOfDay > 7 && hourOfDay < 20) ? true : false;
         String icon = this.getIcon();

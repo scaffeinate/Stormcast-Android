@@ -14,7 +14,6 @@ public class Unit {
     public static final String DU = "DU";
     public static final String IMPERIAL = "us";
     public static final String METRIC = "si";
-    public static final String AUTO = "auto";
     public static final String CELCIUS = "C";
     public static final String FARANHEIT = "F";
     public static final String DEGREE = "\u00b0";

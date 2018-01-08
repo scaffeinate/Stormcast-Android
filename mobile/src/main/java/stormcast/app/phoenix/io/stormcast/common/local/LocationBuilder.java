@@ -14,7 +14,7 @@ public class LocationBuilder {
     protected int id;
     protected String name, address;
     protected double latitude = 0, longitude = 0;
-    protected String backgroundColor = null, textColor = null, unit = Unit.AUTO;
+    protected String backgroundColor = null, textColor = null, unit = Unit.IMPERIAL;
     protected int position = 0;
 
     public LocationBuilder() {
