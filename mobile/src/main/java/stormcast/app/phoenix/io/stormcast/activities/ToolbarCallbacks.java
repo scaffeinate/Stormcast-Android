@@ -10,4 +10,6 @@ public interface ToolbarCallbacks {
     void setToolbarTextColor(int color);
 
     void setToolbarBackgroundColor(int color);
+
+    void setStatusBarColor(int color);
 }

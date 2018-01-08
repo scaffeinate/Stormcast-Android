@@ -2,6 +2,7 @@ package stormcast.app.phoenix.io.stormcast.activities;
 
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -10,14 +11,13 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.view.Window;
+import android.view.WindowManager;
 
 import stormcast.app.phoenix.io.stormcast.R;
 import stormcast.app.phoenix.io.stormcast.databinding.ActivityMainBinding;
@@ -133,6 +133,16 @@ public class MainActivity extends AppCompatActivity
         mBinding.toolbar.toolbar.setBackgroundColor(color);
     }
 
+    @Override
+    public void setStatusBarColor(int color) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(color);
+        }
+    }
+
     private void closeDrawer() {
         new Handler().post(new Runnable() {
             @Override
@@ -144,8 +154,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackStackChanged() {
-        boolean showBackButton  = (mFragmentManager.getBackStackEntryCount() > 0);
-        if(showBackButton) {
+        boolean showBackButton = (mFragmentManager.getBackStackEntryCount() > 0);
+        if (showBackButton) {
             mDrawerToggle.setDrawerIndicatorEnabled(false);
             mActionBar.setDisplayHomeAsUpEnabled(true);
             mDrawerToggle.animateToBackArrow();

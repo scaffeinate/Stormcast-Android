@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
@@ -100,6 +101,9 @@ public class ForecastFragment extends Fragment implements View.OnClickListener, 
         if (getActivity() != null) {
             mToolbarCallbacks = (ToolbarCallbacks) getActivity();
             mToolbarCallbacks.setToolbarTitle(getString(R.string.action_forecast));
+            mToolbarCallbacks.setToolbarBackgroundColor(ContextCompat.getColor(mContext, R.color.colorPrimary));
+            mToolbarCallbacks.setToolbarTextColor(ContextCompat.getColor(mContext, R.color.textColorLight));
+            mToolbarCallbacks.setStatusBarColor(ContextCompat.getColor(mContext, R.color.colorPrimaryDark));
 
             if (getActivity().getSupportLoaderManager() != null) {
                 mLoaderManager = getActivity().getSupportLoaderManager();
@@ -134,7 +138,12 @@ public class ForecastFragment extends Fragment implements View.OnClickListener, 
 
     @Override
     public void onItemClicked(ViewGroup parent, View view, int position) {
-
+        LocationForecast locationForecast = mLocationForecastList.get(position);
+        mFragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.scale_in, R.anim.fade_out, R.anim.fade_in, R.anim.scale_out)
+                .replace(R.id.layout_content, ForecastDetailFragment.newInstance(locationForecast))
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override

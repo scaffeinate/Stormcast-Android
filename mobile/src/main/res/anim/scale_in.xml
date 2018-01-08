@@ -3,10 +3,10 @@
     android:duration="450"
     android:interpolator="@android:anim/overshoot_interpolator">
     <scale
-        android:fromXScale="0.5"
-        android:fromYScale="0.5"
-        android:pivotX="50%"
-        android:pivotY="50%"
+        android:fromXScale="0.4"
+        android:fromYScale="0.4"
+        android:pivotX="40%"
+        android:pivotY="40%"
         android:toXScale="1.0"
         android:toYScale="1.0" />
     <alpha
