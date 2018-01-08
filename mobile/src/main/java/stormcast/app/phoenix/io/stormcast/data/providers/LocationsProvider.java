@@ -69,7 +69,9 @@ public class LocationsProvider extends ContentProvider {
                 break;
             case LOCATIONS_WITH_FORECAST:
                 String rawQuery = " SELECT " + LocationEntry.TABLE_NAME + ".*, "
-                        + ForecastEntry.TABLE_NAME + ".* "
+                        + ForecastEntry.TABLE_NAME + ".*, "
+                        + LocationEntry.TABLE_NAME + "." + LocationEntry._ID + " AS "
+                        + LocationEntry.LOC_ID
                         + " FROM " + LocationEntry.TABLE_NAME + " LEFT JOIN " + ForecastEntry.TABLE_NAME
                         + " ON " + LocationEntry.TABLE_NAME + "." + LocationEntry._ID + EQUAL_TO
                         + ForecastEntry.TABLE_NAME + "." + ForecastEntry.LOCATION_ID

@@ -55,6 +55,7 @@ public class NetworkQueueLoader<T> implements LoaderManager.LoaderCallbacks<List
                 while (!mCallQueue.isEmpty()) {
                     Call<T> call = mCallQueue.poll();
                     try {
+                        Log.i(TAG, "Executing request: " + call.request().url());
                         Response<T> response = call.execute();
                         if (response != null && response.code() == 200) {
                             resultList.add(response.body());

@@ -2,10 +2,7 @@ package stormcast.app.phoenix.io.stormcast.loaders;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 
 /**
@@ -23,7 +20,7 @@ public class BackgroundLoader<T> implements LoaderManager.LoaderCallbacks<T> {
 
     @Override
     public Loader<T> onCreateLoader(int id, Bundle bundle) {
-        return new CustomTaskLoader<>(mContext);
+        return new CustomTaskLoader<>(mContext, mCallbacks);
     }
 
     @Override
@@ -42,24 +39,5 @@ public class BackgroundLoader<T> implements LoaderManager.LoaderCallbacks<T> {
         T doInBackground();
 
         void onTaskCompleted(Loader loader, T data);
-    }
-
-    class CustomTaskLoader<T> extends AsyncTaskLoader<T> {
-
-        public CustomTaskLoader(@NonNull Context context) {
-            super(context);
-        }
-
-        @Override
-        protected void onStartLoading() {
-            super.onStartLoading();
-            forceLoad();
-        }
-
-        @Nullable
-        @Override
-        public T loadInBackground() {
-            return (T) mCallbacks.doInBackground();
-        }
     }
 }

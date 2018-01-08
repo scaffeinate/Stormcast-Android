@@ -22,7 +22,8 @@ public class LocationBuilder {
 
     public static LocationBuilder from(Location location) {
         LocationBuilder locationBuilder = new LocationBuilder();
-        locationBuilder.setId(location.getId())
+        locationBuilder
+                .setId(location.getId())
                 .setName(location.getName())
                 .setAddress(location.getAddress())
                 .setLatitude(location.getLatitude())

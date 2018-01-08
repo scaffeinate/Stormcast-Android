@@ -9,14 +9,19 @@ import android.os.Parcelable;
 
 public class DailyForecast implements Parcelable {
     private String icon;
-    private int time, updatedAt;
+    private int time;
     private double temperature;
 
     protected DailyForecast(Parcel in) {
         icon = in.readString();
         time = in.readInt();
-        updatedAt = in.readInt();
         temperature = in.readDouble();
+    }
+
+    protected DailyForecast(DailyForecastBuilder dailyForecastBuilder) {
+        setIcon(dailyForecastBuilder.icon);
+        setTime(dailyForecastBuilder.time);
+        setTemperature(dailyForecastBuilder.temperature);
     }
 
     public static final Creator<DailyForecast> CREATOR = new Creator<DailyForecast>() {
@@ -31,6 +36,30 @@ public class DailyForecast implements Parcelable {
         }
     };
 
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    public void setTime(int time) {
+        this.time = time;
+    }
+
+    public double getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(double temperature) {
+        this.temperature = temperature;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -40,7 +69,6 @@ public class DailyForecast implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(icon);
         parcel.writeInt(time);
-        parcel.writeInt(updatedAt);
         parcel.writeDouble(temperature);
     }
 }

@@ -1,11 +1,17 @@
 package stormcast.app.phoenix.io.stormcast.common.local;
 
+import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.google.gson.Gson;
 
 import java.util.Calendar;
 import java.util.List;
 
+import stormcast.app.phoenix.io.stormcast.common.DBMappable;
+import stormcast.app.phoenix.io.stormcast.data.PersistenceContract;
+import stormcast.app.phoenix.io.stormcast.data.PersistenceContract.ForecastEntry;
 import stormcast.app.phoenix.io.stormcast.utils.FormatUtils;
 import stormcast.app.phoenix.io.stormcast.utils.IconResource;
 
@@ -17,7 +23,7 @@ import static stormcast.app.phoenix.io.stormcast.common.local.Unit.PERCENT;
  * Created by sudharti on 8/24/17.
  */
 
-public class Forecast implements Parcelable {
+public class Forecast implements Parcelable, DBMappable {
 
     public static final Creator<Forecast> CREATOR = new Creator<Forecast>() {
         @Override
@@ -36,6 +42,7 @@ public class Forecast implements Parcelable {
     private double humidity, ozone, windSpeed, visibility, pressure;
     private long updatedAt;
     private List<DailyForecast> dailyForecastList;
+    private final Gson gson = new Gson();
 
     private String formattedTemperature, formattedApparentTemperature,
             formattedMinTemperature, formattedMaxTemperature,
@@ -397,5 +404,29 @@ public class Forecast implements Parcelable {
         setFormattedUVIndex(String.valueOf(this.getUvIndex()));
         setFormattedVisibility(FormatUtils.formatUnit(this.getVisibility(), MILE));
         setIconResource(IconResource.getIconResource(icon, isDay));
+    }
+
+    @Override
+    public ContentValues toContentValues() {
+        ContentValues cv = new ContentValues();
+        cv.put(ForecastEntry.TEMPERATURE, this.getTemperature());
+        cv.put(ForecastEntry.APPARENT_TEMPERATURE, this.getApparentTemperature());
+        cv.put(ForecastEntry.MIN_TEMPERATURE, this.getMinTemperature());
+        cv.put(ForecastEntry.MAX_TEMPERATURE, this.getMaxTemperature());
+        cv.put(ForecastEntry.HUMIDITY, this.getHumidity());
+        cv.put(ForecastEntry.ICON, this.getIcon());
+        cv.put(ForecastEntry.PRESSURE, this.getPressure());
+        cv.put(ForecastEntry.OZONE, this.getOzone());
+        cv.put(ForecastEntry.UV_INDEX, this.getUvIndex());
+        cv.put(ForecastEntry.SUMMARY, this.getSummary());
+        cv.put(ForecastEntry.WIND_SPEED, this.getWindSpeed());
+        cv.put(ForecastEntry.VISIBILITY, this.getVisibility());
+        cv.put(ForecastEntry.UNITS, this.getUnits());
+        cv.put(ForecastEntry.UPDATED_AT, this.getUpdatedAt());
+        cv.put(ForecastEntry.TIMEZONE, this.getTimezone());
+        cv.put(ForecastEntry.LOCATION_ID, this.getLocationId());
+        cv.put(ForecastEntry.CURRENT_TIME, this.getCurrentTime());
+        cv.put(ForecastEntry.DAILY_FORECASTS, gson.toJson(this.getDailyForecastList()));
+        return cv;
     }
 }

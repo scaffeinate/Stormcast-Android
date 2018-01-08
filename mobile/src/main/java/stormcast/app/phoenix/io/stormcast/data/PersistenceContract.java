@@ -48,6 +48,7 @@ public class PersistenceContract {
         public final static String BG_COLOR = "bg_color";
         public final static String TEXT_COLOR = "text_color";
         public final static String UNIT = "unit";
+        public final static String LOC_ID = "loc_id";
     }
 
     public static abstract class ForecastEntry implements BaseColumns {

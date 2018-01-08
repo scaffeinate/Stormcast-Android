@@ -1,5 +1,6 @@
 package stormcast.app.phoenix.io.stormcast.fragments;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.databinding.DataBindingUtil;
@@ -10,30 +11,34 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.Response;
 import stormcast.app.phoenix.io.stormcast.R;
 import stormcast.app.phoenix.io.stormcast.activities.ToolbarCallbacks;
 import stormcast.app.phoenix.io.stormcast.adapters.ForecastsAdapter;
 import stormcast.app.phoenix.io.stormcast.adapters.OnItemClickHandler;
+import stormcast.app.phoenix.io.stormcast.common.local.Forecast;
 import stormcast.app.phoenix.io.stormcast.common.local.LocationForecast;
 import stormcast.app.phoenix.io.stormcast.common.local.LocationForecastBuilder;
 import stormcast.app.phoenix.io.stormcast.common.network._Forecast;
 import stormcast.app.phoenix.io.stormcast.data.PersistenceContract;
-import stormcast.app.phoenix.io.stormcast.databinding.FragmentHomeBinding;
+import stormcast.app.phoenix.io.stormcast.databinding.FragmentForecastBinding;
+import stormcast.app.phoenix.io.stormcast.loaders.BackgroundLoader;
 import stormcast.app.phoenix.io.stormcast.loaders.ContentLoader;
-import stormcast.app.phoenix.io.stormcast.loaders.NetworkQueueLoader;
-import stormcast.app.phoenix.io.stormcast.loaders.NetworkQueueLoader.Callbacks;
 import stormcast.app.phoenix.io.stormcast.network.DarkSkyApiClient;
+import stormcast.app.phoenix.io.stormcast.utils.ForecastMapper;
 
 import static stormcast.app.phoenix.io.stormcast.Stormcast.FORECASTS_LOADER_ID;
 import static stormcast.app.phoenix.io.stormcast.Stormcast.LOCATIONS_LOADER_ID;
@@ -42,12 +47,12 @@ import static stormcast.app.phoenix.io.stormcast.Stormcast.LOCATIONS_LOADER_ID;
  * Created by sudharti on 12/31/17.
  */
 
-public class ForecastFragment extends Fragment implements View.OnClickListener, ContentLoader.ContentLoaderCallbacks, OnItemClickHandler {
+public class ForecastFragment extends Fragment implements View.OnClickListener, ContentLoader.ContentLoaderCallbacks, OnItemClickHandler, SwipeRefreshLayout.OnRefreshListener, BackgroundLoader.Callbacks {
 
     private static final String TAG = ForecastFragment.class.getSimpleName();
     private Context mContext;
     private List<LocationForecast> mLocationForecastList;
-    private FragmentHomeBinding mBinding;
+    private FragmentForecastBinding mBinding;
     private FragmentManager mFragmentManager;
     private RecyclerView.LayoutManager mLayoutManager;
     private DarkSkyApiClient mApiClient = DarkSkyApiClient.getInstance();
@@ -57,6 +62,7 @@ public class ForecastFragment extends Fragment implements View.OnClickListener, 
 
     private ForecastsAdapter mAdapter;
     private LoaderManager mLoaderManager;
+    private ContentResolver mContentResolver;
 
     public static ForecastFragment newInstance() {
         return new ForecastFragment();
@@ -73,7 +79,7 @@ public class ForecastFragment extends Fragment implements View.OnClickListener, 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false);
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_forecast, container, false);
 
         mAdapter = new ForecastsAdapter(mContext, this);
         mLayoutManager = new GridLayoutManager(mContext, 1);
@@ -81,6 +87,7 @@ public class ForecastFragment extends Fragment implements View.OnClickListener, 
         mBinding.recyclerViewForecasts.setAdapter(mAdapter);
         mBinding.recyclerViewForecasts.setLayoutManager(mLayoutManager);
         mBinding.btnAddLocation.setOnClickListener(this);
+        mBinding.swipeRefreshLayout.setOnRefreshListener(this);
 
         mFragmentManager = getActivity().getSupportFragmentManager();
         return mBinding.getRoot();
@@ -96,6 +103,10 @@ public class ForecastFragment extends Fragment implements View.OnClickListener, 
             if (getActivity().getSupportLoaderManager() != null) {
                 mLoaderManager = getActivity().getSupportLoaderManager();
             }
+
+            if (getActivity().getContentResolver() != null) {
+                mContentResolver = getActivity().getContentResolver();
+            }
         }
     }
 
@@ -103,7 +114,7 @@ public class ForecastFragment extends Fragment implements View.OnClickListener, 
     public void onResume() {
         super.onResume();
         mLocationForecastList.clear();
-        fetchLocations();
+        loadFromDb();
     }
 
     @Override
@@ -137,14 +148,12 @@ public class ForecastFragment extends Fragment implements View.OnClickListener, 
                     }
                     mAdapter.setLocationForecastList(mLocationForecastList);
                     showRecyclerView();
-                    loadFromNetwork();
                 }
                 break;
         }
     }
 
-
-    private void fetchLocations() {
+    private void loadFromDb() {
         Bundle args = new Bundle();
         args.putParcelable(ContentLoader.URI_EXTRA, PersistenceContract.LOCATIONS_FORECAST_CONTENT_URI);
         if (mLoaderManager != null) {
@@ -153,32 +162,58 @@ public class ForecastFragment extends Fragment implements View.OnClickListener, 
     }
 
     private void loadFromNetwork() {
-        List<Call<_Forecast>> callList = new ArrayList<>();
-        for (int i = 0; i < mLocationForecastList.size(); i++) {
-            LocationForecast locationForecast = mLocationForecastList.get(i);
-            if (locationForecast != null && locationForecast.getLocation() != null) {
-                callList.add(mApiClient.createForecastRequestFor(locationForecast.getLocation()));
-            }
-        }
-        
-        NetworkQueueLoader<_Forecast> networkQueueLoader = new NetworkQueueLoader<>(mContext, callList, new Callbacks<_Forecast>() {
-            @Override
-            public void onTaskCompleted(Loader loader, List<_Forecast> data) {
-                Toast.makeText(mContext, "Task completed " + data.size(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        mLoaderManager.restartLoader(FORECASTS_LOADER_ID, null, networkQueueLoader);
+        BackgroundLoader<Void> backgroundLoader = new BackgroundLoader<>(mContext, this);
+        mLoaderManager.restartLoader(FORECASTS_LOADER_ID, null, backgroundLoader);
     }
 
     private void showRecyclerView() {
-        mBinding.recyclerViewForecasts.setVisibility(View.VISIBLE);
+        mBinding.swipeRefreshLayout.setVisibility(View.VISIBLE);
         mBinding.progressBarLoading.setVisibility(View.GONE);
         mBinding.textViewErrorMessage.setVisibility(View.GONE);
     }
 
     private void showErrorMessage() {
         mBinding.progressBarLoading.setVisibility(View.GONE);
-        mBinding.recyclerViewForecasts.setVisibility(View.GONE);
+        mBinding.swipeRefreshLayout.setVisibility(View.GONE);
         mBinding.textViewErrorMessage.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onRefresh() {
+        loadFromNetwork();
+    }
+
+    @Override
+    public Object doInBackground() {
+        for (int i = 0; i < mLocationForecastList.size(); i++) {
+            LocationForecast locationForecast = mLocationForecastList.get(i);
+            if (locationForecast != null && locationForecast.getLocation() != null) {
+                int locationId = locationForecast.getLocation().getId();
+                Call<_Forecast> call = mApiClient.createForecastRequestFor(locationForecast.getLocation());
+                try {
+                    Log.i(TAG, "Requesting content from: " + call.request().url());
+                    Response<_Forecast> response = call.execute();
+                    if (response != null && response.code() == 200) {
+                        _Forecast _forecast = response.body();
+                        Forecast forecast = ForecastMapper.map(_forecast);
+                        forecast.setLocationId(locationId);
+                        locationForecast.setForecast(forecast);
+                        mContentResolver.insert(
+                                PersistenceContract.FORECAST_CONTENT_URI
+                                        .buildUpon()
+                                        .appendPath(String.valueOf(locationId)).build(), forecast.toContentValues());
+                    }
+                } catch (IOException e) {
+                    Log.e(TAG, "Exception occurred while loading forecast: " + e.getMessage());
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void onTaskCompleted(Loader loader, Object data) {
+        mAdapter.notifyDataSetChanged();
+        mBinding.swipeRefreshLayout.setRefreshing(false);
     }
 }

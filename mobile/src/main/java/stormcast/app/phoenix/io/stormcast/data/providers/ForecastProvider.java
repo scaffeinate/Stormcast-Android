@@ -26,6 +26,8 @@ public class ForecastProvider extends ContentProvider {
 
     private static final int FORECAST_WITH_LOCATION_ID = 200;
 
+    private static final int FORECASTS = 201;
+
     private static final UriMatcher sUriMatcher = builderUriMatcher();
 
     private static final String PARAM = " ? ";
@@ -38,6 +40,7 @@ public class ForecastProvider extends ContentProvider {
     private static UriMatcher builderUriMatcher() {
         UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(PersistenceContract.FORECAST_AUTHORITY, PersistenceContract.FORECAST_PATH + "/#/", FORECAST_WITH_LOCATION_ID);
+        uriMatcher.addURI(PersistenceContract.FORECAST_AUTHORITY, PersistenceContract.FORECAST_PATH, FORECASTS);
         return uriMatcher;
     }
 
