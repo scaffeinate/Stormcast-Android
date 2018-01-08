@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity
 
             if (fragment != null) {
                 mFragmentManager.beginTransaction()
+                        .setCustomAnimations(R.anim.scale_in, R.anim.scale_out)
                         .replace(R.id.layout_content, fragment)
                         .commit();
             }
