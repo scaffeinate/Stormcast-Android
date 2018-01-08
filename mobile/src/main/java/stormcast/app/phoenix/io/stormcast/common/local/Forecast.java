@@ -37,10 +37,10 @@ public class Forecast implements Parcelable, DBMappable {
         }
     };
     private String timezone, summary, icon, units;
-    private int id = 0, currentTime, locationId, uvIndex;
+    private int id = 0, locationId, uvIndex;
     private double temperature, apparentTemperature, minTemperature, maxTemperature;
     private double humidity, ozone, windSpeed, visibility, pressure;
-    private long updatedAt;
+    private long currentTime, updatedAt;
     private List<DailyForecast> dailyForecastList;
     private final Gson gson = new Gson();
 
@@ -53,7 +53,7 @@ public class Forecast implements Parcelable, DBMappable {
     protected Forecast(Parcel in) {
         setId(in.readInt());
         setTimezone(in.readString());
-        setCurrentTime(in.readInt());
+        setCurrentTime(in.readLong());
         setSummary(in.readString());
         setIcon(in.readString());
         setTemperature(in.readDouble());
@@ -121,11 +121,11 @@ public class Forecast implements Parcelable, DBMappable {
         this.timezone = timezone;
     }
 
-    public int getCurrentTime() {
+    public long getCurrentTime() {
         return currentTime;
     }
 
-    public void setCurrentTime(Integer currentTime) {
+    public void setCurrentTime(long currentTime) {
         this.currentTime = currentTime;
     }
 
@@ -355,7 +355,7 @@ public class Forecast implements Parcelable, DBMappable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(this.id);
         parcel.writeString(this.timezone);
-        parcel.writeInt(this.currentTime);
+        parcel.writeLong(this.currentTime);
         parcel.writeString(this.summary);
         parcel.writeString(this.icon);
         parcel.writeDouble(this.temperature);

@@ -15,10 +15,10 @@ import static stormcast.app.phoenix.io.stormcast.data.PersistenceContract.Foreca
 
 public class ForecastBuilder {
     protected String timezone, summary, icon, units;
-    protected int id, currentTime, locationId, uvIndex;
+    protected int id, locationId, uvIndex;
     protected double temperature, apparentTemperature,
             humidity, windSpeed, pressure, ozone, visibility, minTemperature, maxTemperature;
-    protected long updatedAt;
+    protected long updatedAt, currentTime;
     protected List<DailyForecast> dailyForecastList;
     protected static final Gson gson = new Gson();
 
@@ -34,7 +34,7 @@ public class ForecastBuilder {
         return new ForecastBuilder()
                 .setId(cursor.getInt(cursor.getColumnIndex(ForecastEntry._ID)))
                 .setTimezone(cursor.getString(cursor.getColumnIndex(ForecastEntry.TIMEZONE)))
-                .setCurrentTime(cursor.getInt(cursor.getColumnIndex(ForecastEntry.CURRENT_TIME)))
+                .setCurrentTime(cursor.getLong(cursor.getColumnIndex(ForecastEntry.CURRENT_TIME)))
                 .setSummary(cursor.getString(cursor.getColumnIndex(ForecastEntry.SUMMARY)))
                 .setIcon(cursor.getString(cursor.getColumnIndex(ForecastEntry.ICON)))
                 .setTemperature(cursor.getDouble(cursor.getColumnIndex(ForecastEntry.TEMPERATURE)))
@@ -47,7 +47,7 @@ public class ForecastBuilder {
                 .setVisibility(cursor.getDouble(cursor.getColumnIndex(ForecastEntry.VISIBILITY)))
                 .setOzone(cursor.getDouble(cursor.getColumnIndex(ForecastEntry.OZONE)))
                 .setUvIndex(cursor.getInt(cursor.getColumnIndex(ForecastEntry.UV_INDEX)))
-                .setUpdatedAt(cursor.getInt(cursor.getColumnIndex(ForecastEntry.UPDATED_AT)))
+                .setUpdatedAt(cursor.getLong(cursor.getColumnIndex(ForecastEntry.UPDATED_AT)))
                 .setUnits(cursor.getString(cursor.getColumnIndex(ForecastEntry.UNITS)))
                 .setLocationId(cursor.getInt(cursor.getColumnIndex(ForecastEntry.LOCATION_ID)))
                 .setDailyForecastList(dailyForecastList);
@@ -63,7 +63,7 @@ public class ForecastBuilder {
         return this;
     }
 
-    public ForecastBuilder setCurrentTime(int currentTime) {
+    public ForecastBuilder setCurrentTime(long currentTime) {
         this.currentTime = currentTime;
         return this;
     }

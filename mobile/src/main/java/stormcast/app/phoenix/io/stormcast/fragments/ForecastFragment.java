@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -148,6 +149,7 @@ public class ForecastFragment extends Fragment implements View.OnClickListener, 
                     }
                     mAdapter.setLocationForecastList(mLocationForecastList);
                     showRecyclerView();
+                    loadFromNetwork();
                 }
                 break;
         }
@@ -189,19 +191,28 @@ public class ForecastFragment extends Fragment implements View.OnClickListener, 
             LocationForecast locationForecast = mLocationForecastList.get(i);
             if (locationForecast != null && locationForecast.getLocation() != null) {
                 int locationId = locationForecast.getLocation().getId();
+                Forecast forecast = locationForecast.getForecast();
+                long lastUpdatedAt = forecast.getUpdatedAt();
+                long now = new Date().getTime();
+                int diffInMinutes = (int) ((now - lastUpdatedAt) / (60 * 1000));
+
+                if (diffInMinutes <= 20) {
+                    continue;
+                }
+
                 Call<_Forecast> call = mApiClient.createForecastRequestFor(locationForecast.getLocation());
                 try {
                     Log.i(TAG, "Requesting content from: " + call.request().url());
                     Response<_Forecast> response = call.execute();
                     if (response != null && response.code() == 200) {
                         _Forecast _forecast = response.body();
-                        Forecast forecast = ForecastMapper.map(_forecast);
-                        forecast.setLocationId(locationId);
-                        locationForecast.setForecast(forecast);
+                        Forecast newForecast = ForecastMapper.map(_forecast);
+                        newForecast.setLocationId(locationId);
+                        locationForecast.setForecast(newForecast);
                         mContentResolver.insert(
                                 PersistenceContract.FORECAST_CONTENT_URI
                                         .buildUpon()
-                                        .appendPath(String.valueOf(locationId)).build(), forecast.toContentValues());
+                                        .appendPath(String.valueOf(locationId)).build(), newForecast.toContentValues());
                     }
                 } catch (IOException e) {
                     Log.e(TAG, "Exception occurred while loading forecast: " + e.getMessage());

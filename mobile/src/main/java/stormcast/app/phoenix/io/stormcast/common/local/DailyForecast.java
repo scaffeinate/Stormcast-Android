@@ -9,12 +9,12 @@ import android.os.Parcelable;
 
 public class DailyForecast implements Parcelable {
     private String icon;
-    private int time;
+    private long time;
     private double temperature;
 
     protected DailyForecast(Parcel in) {
         icon = in.readString();
-        time = in.readInt();
+        time = in.readLong();
         temperature = in.readDouble();
     }
 
@@ -44,11 +44,11 @@ public class DailyForecast implements Parcelable {
         this.icon = icon;
     }
 
-    public int getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(int time) {
+    public void setTime(long time) {
         this.time = time;
     }
 
@@ -68,7 +68,7 @@ public class DailyForecast implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(icon);
-        parcel.writeInt(time);
+        parcel.writeLong(time);
         parcel.writeDouble(temperature);
     }
 }

@@ -6,7 +6,7 @@ package stormcast.app.phoenix.io.stormcast.common.local;
 
 public class DailyForecastBuilder {
     protected String icon;
-    protected int time;
+    protected long time;
     protected double temperature;
 
     public DailyForecastBuilder setIcon(String icon) {
@@ -14,7 +14,7 @@ public class DailyForecastBuilder {
         return this;
     }
 
-    public DailyForecastBuilder setTime(int time) {
+    public DailyForecastBuilder setTime(long time) {
         this.time = time;
         return this;
     }
