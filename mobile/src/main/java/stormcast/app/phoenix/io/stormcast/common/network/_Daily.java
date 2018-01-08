@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Daily {
+public class _Daily {
 
     @SerializedName("summary")
     @Expose
@@ -16,7 +16,7 @@ public class Daily {
     private String icon;
     @SerializedName("data")
     @Expose
-    private List<Datum__> data = new ArrayList<Datum__>();
+    private List<_DailyData> data = new ArrayList<_DailyData>();
 
     public String getSummary() {
         return summary;
@@ -34,11 +34,11 @@ public class Daily {
         this.icon = icon;
     }
 
-    public List<Datum__> getData() {
+    public List<_DailyData> getData() {
         return data;
     }
 
-    public void setData(List<Datum__> data) {
+    public void setData(List<_DailyData> data) {
         this.data = data;
     }
 

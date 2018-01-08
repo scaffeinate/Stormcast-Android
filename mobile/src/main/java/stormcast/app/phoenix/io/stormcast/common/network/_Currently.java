@@ -3,7 +3,7 @@ package stormcast.app.phoenix.io.stormcast.common.network;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Datum_ {
+public class _Currently {
     @SerializedName("time")
     @Expose
     private int time;
@@ -13,6 +13,12 @@ public class Datum_ {
     @SerializedName("icon")
     @Expose
     private String icon;
+    @SerializedName("nearestStormDistance")
+    @Expose
+    private int nearestStormDistance;
+    @SerializedName("nearestStormBearing")
+    @Expose
+    private int nearestStormBearing;
     @SerializedName("precipIntensity")
     @Expose
     private double precipIntensity;
@@ -55,9 +61,6 @@ public class Datum_ {
     @SerializedName("uvIndex")
     @Expose
     private int uvIndex;
-    @SerializedName("precipType")
-    @Expose
-    private String precipType;
 
     public int getTime() {
         return time;
@@ -81,6 +84,22 @@ public class Datum_ {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public int getNearestStormDistance() {
+        return nearestStormDistance;
+    }
+
+    public void setNearestStormDistance(int nearestStormDistance) {
+        this.nearestStormDistance = nearestStormDistance;
+    }
+
+    public int getNearestStormBearing() {
+        return nearestStormBearing;
+    }
+
+    public void setNearestStormBearing(int nearestStormBearing) {
+        this.nearestStormBearing = nearestStormBearing;
     }
 
     public double getPrecipIntensity() {
@@ -194,13 +213,4 @@ public class Datum_ {
     public void setUvIndex(int uvIndex) {
         this.uvIndex = uvIndex;
     }
-
-    public String getPrecipType() {
-        return precipType;
-    }
-
-    public void setPrecipType(String precipType) {
-        this.precipType = precipType;
-    }
-
 }

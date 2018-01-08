@@ -3,7 +3,7 @@ package stormcast.app.phoenix.io.stormcast.common.network;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Datum {
+public class _MinutelyData {
     @SerializedName("time")
     @Expose
     private int time;

@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Minutely {
+public class _Minutely {
 
     @SerializedName("summary")
     @Expose
@@ -16,7 +16,7 @@ public class Minutely {
     private String icon;
     @SerializedName("data")
     @Expose
-    private List<Datum> data = new ArrayList<Datum>();
+    private List<_MinutelyData> data = new ArrayList<_MinutelyData>();
 
     public String getSummary() {
         return summary;
@@ -34,11 +34,11 @@ public class Minutely {
         this.icon = icon;
     }
 
-    public List<Datum> getData() {
+    public List<_MinutelyData> getData() {
         return data;
     }
 
-    public void setData(List<Datum> data) {
+    public void setData(List<_MinutelyData> data) {
         this.data = data;
     }
 }

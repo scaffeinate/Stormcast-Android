@@ -3,7 +3,7 @@ package stormcast.app.phoenix.io.stormcast.common.network;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Forecast {
+public class _Forecast {
 
     @SerializedName("latitude")
     @Expose
@@ -19,19 +19,19 @@ public class Forecast {
     private double offset;
     @SerializedName("currently")
     @Expose
-    private Currently currently;
+    private _Currently currently;
     @SerializedName("minutely")
     @Expose
-    private Minutely minutely;
+    private _Minutely minutely;
     @SerializedName("hourly")
     @Expose
-    private Hourly hourly;
+    private _Hourly hourly;
     @SerializedName("daily")
     @Expose
-    private Daily daily;
+    private _Daily daily;
     @SerializedName("flags")
     @Expose
-    private Flags flags;
+    private _Flags flags;
 
     public double getLatitude() {
         return latitude;
@@ -65,43 +65,43 @@ public class Forecast {
         this.offset = offset;
     }
 
-    public Currently getCurrently() {
+    public _Currently getCurrently() {
         return currently;
     }
 
-    public void setCurrently(Currently currently) {
+    public void setCurrently(_Currently currently) {
         this.currently = currently;
     }
 
-    public Minutely getMinutely() {
+    public _Minutely getMinutely() {
         return minutely;
     }
 
-    public void setMinutely(Minutely minutely) {
+    public void setMinutely(_Minutely minutely) {
         this.minutely = minutely;
     }
 
-    public Hourly getHourly() {
+    public _Hourly getHourly() {
         return hourly;
     }
 
-    public void setHourly(Hourly hourly) {
+    public void setHourly(_Hourly hourly) {
         this.hourly = hourly;
     }
 
-    public Daily getDaily() {
+    public _Daily getDaily() {
         return daily;
     }
 
-    public void setDaily(Daily daily) {
+    public void setDaily(_Daily daily) {
         this.daily = daily;
     }
 
-    public Flags getFlags() {
+    public _Flags getFlags() {
         return flags;
     }
 
-    public void setFlags(Flags flags) {
+    public void setFlags(_Flags flags) {
         this.flags = flags;
     }
 }
