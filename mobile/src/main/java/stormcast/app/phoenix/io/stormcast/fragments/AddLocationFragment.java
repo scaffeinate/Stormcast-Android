@@ -45,6 +45,7 @@ import stormcast.app.phoenix.io.stormcast.R;
 import stormcast.app.phoenix.io.stormcast.activities.ToolbarCallbacks;
 import stormcast.app.phoenix.io.stormcast.common.local.Location;
 import stormcast.app.phoenix.io.stormcast.common.local.LocationBuilder;
+import stormcast.app.phoenix.io.stormcast.common.local.Unit;
 import stormcast.app.phoenix.io.stormcast.data.PersistenceContract;
 import stormcast.app.phoenix.io.stormcast.databinding.FragmentAddLocationBinding;
 import stormcast.app.phoenix.io.stormcast.utils.FormatUtils;
@@ -72,7 +73,8 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
     private CameraPosition mCameraPosition;
     private LocationBuilder mLocationBuilder;
 
-    private int selectedUnit, backgroundColor, textColor;
+    private int backgroundColor, textColor;
+    private String selectedUnit;
     private ToolbarCallbacks mToolbarCallbacks;
 
     private Animation fadeInAnimation;
@@ -101,9 +103,9 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
         mContext = getContext();
         fadeInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.fade_in);
         mTabPills = new TabPill[]{
-                new TabPill<>(getString(R.string.auto), Location.UNIT_AUTO),
-                new TabPill<>(getString(R.string.imperial), Location.UNIT_IMPERIAL),
-                new TabPill<>(getString(R.string.metric), Location.UNIT_METRIC)
+                new TabPill<>(getString(R.string.auto), Unit.AUTO),
+                new TabPill<>(getString(R.string.imperial), Unit.IMPERIAL),
+                new TabPill<>(getString(R.string.metric), Unit.METRIC)
         };
         setHasOptionsMenu(true);
     }
@@ -142,7 +144,7 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
         mBinding.unitsSwitchTabSelector.setOnTabClickListener(new TabPillsSelector.OnTabClickListener() {
             @Override
             public void onTabClick(int index) {
-                mLocationBuilder.setUnit((Integer) mBinding.unitsSwitchTabSelector.getValueAt(index));
+                mLocationBuilder.setUnit((String) mBinding.unitsSwitchTabSelector.getValueAt(index));
             }
         });
 
@@ -156,7 +158,7 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
         mToolbarCallbacks = (ToolbarCallbacks) getActivity();
         mToolbarCallbacks.setToolbarTitle(getString(R.string.add_location));
 
-        selectedUnit = Location.UNIT_AUTO;
+        selectedUnit = Unit.AUTO;
         backgroundColor = ContextCompat.getColor(mContext, R.color.colorPrimary);
         textColor = ContextCompat.getColor(mContext, R.color.textColorLight);
 
@@ -189,7 +191,7 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
         drawable.setColor(textColor);
 
         for (int i = 0; i < mTabPills.length; i++) {
-            if (((Integer) mTabPills[i].getValue()).intValue() == selectedUnit) {
+            if (((String) mTabPills[i].getValue()).equals(selectedUnit)) {
                 mBinding.unitsSwitchTabSelector.setSelectedIndex(i);
                 break;
             }
@@ -316,7 +318,7 @@ public class AddLocationFragment extends Fragment implements View.OnClickListene
     private void saveLocation(Location location) {
         if (getActivity() != null && getActivity().getContentResolver() != null) {
             try {
-                if(location.getId() == 0) {
+                if (location.getId() == 0) {
                     Uri uri = PersistenceContract.LOCATIONS_CONTENT_URI
                             .buildUpon()
                             .build();

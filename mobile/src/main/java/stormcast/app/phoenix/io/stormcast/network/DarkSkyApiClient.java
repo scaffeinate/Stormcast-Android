@@ -49,10 +49,9 @@ public class DarkSkyApiClient {
                 .append(location.getLongitude())
                 .toString();
         String exclude = "minutely";
-        String units = (location.getUnit() == Location.UNIT_AUTO) ? "auto" : (location.getUnit() == Location.UNIT_IMPERIAL) ? "us" : "si";
         Response<Forecast> response = null;
         try {
-            response = darkSkyApi.loadForecast(API_KEY, latLng, exclude, units).execute();
+            response = darkSkyApi.loadForecast(API_KEY, latLng, exclude, location.getUnit()).execute();
         } catch (IOException e) {
             Log.e(TAG, "Exception occurred while loading forecast: " + e.getMessage());
         }

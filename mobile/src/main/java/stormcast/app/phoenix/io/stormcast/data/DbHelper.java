@@ -14,7 +14,7 @@ public class DbHelper extends SQLiteOpenHelper {
             PersistenceContract.LocationEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + PersistenceContract.LocationEntry.POSITION + " INTEGER, " +
             PersistenceContract.LocationEntry.NAME + " TEXT, " + PersistenceContract.LocationEntry.ADDRESS + " TEXT, " + PersistenceContract.LocationEntry.LATITUDE + " REAL, " +
             PersistenceContract.LocationEntry.LONGITUDE + " REAL, " + PersistenceContract.LocationEntry.BG_COLOR + " VARCHAR, " +
-            PersistenceContract.LocationEntry.TEXT_COLOR + " VARCHAR, " + PersistenceContract.LocationEntry.UNIT + " INTEGER)";
+            PersistenceContract.LocationEntry.TEXT_COLOR + " VARCHAR, " + PersistenceContract.LocationEntry.UNIT + " VARCHAR)";
 
     private final static String CREATE_FORECAST_TABLE_SQL = " CREATE TABLE " + PersistenceContract.ForecastEntry.TABLE_NAME +
             " ( " +

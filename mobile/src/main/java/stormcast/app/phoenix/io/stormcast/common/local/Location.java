@@ -15,14 +15,10 @@ import stormcast.app.phoenix.io.stormcast.data.PersistenceContract.LocationEntry
 
 public class Location implements Parcelable,
         DBMappable<Location>, Validatable {
-    public static final int UNIT_AUTO = 0;
-    public static final int UNIT_IMPERIAL = 1;
-    public static final int UNIT_METRIC = 2;
 
-    private String name, address, backgroundColor, textColor;
-
+    private String name, address, backgroundColor, textColor, unit;
     private double latitude = 0, longitude = 0;
-    private int id = 0, unit = UNIT_AUTO, position = 0;
+    private int id = 0, position = 0;
 
     public Location() {
     }
@@ -35,7 +31,7 @@ public class Location implements Parcelable,
         latitude = in.readDouble();
         longitude = in.readDouble();
         id = in.readInt();
-        unit = in.readInt();
+        unit = in.readString();
         position = in.readInt();
     }
 
@@ -103,11 +99,11 @@ public class Location implements Parcelable,
         this.id = id;
     }
 
-    public int getUnit() {
+    public String getUnit() {
         return unit;
     }
 
-    public void setUnit(int unit) {
+    public void setUnit(String unit) {
         this.unit = unit;
     }
 
@@ -149,7 +145,7 @@ public class Location implements Parcelable,
         parcel.writeDouble(latitude);
         parcel.writeDouble(longitude);
         parcel.writeInt(id);
-        parcel.writeInt(unit);
+        parcel.writeString(unit);
         parcel.writeInt(position);
     }
 

@@ -14,8 +14,8 @@ public class LocationBuilder {
     protected int id;
     protected String name, address;
     protected double latitude = 0, longitude = 0;
-    protected String backgroundColor = null, textColor = null;
-    protected int unit = Location.UNIT_AUTO, position = 0;
+    protected String backgroundColor = null, textColor = null, unit = Unit.AUTO;
+    protected int position = 0;
 
     public LocationBuilder() {
     }
@@ -44,7 +44,7 @@ public class LocationBuilder {
                 .setLongitude(cursor.getDouble(cursor.getColumnIndex(LocationEntry.LONGITUDE)))
                 .setBackgroundColor(cursor.getString(cursor.getColumnIndex(LocationEntry.BG_COLOR)))
                 .setTextColor(cursor.getString(cursor.getColumnIndex(LocationEntry.TEXT_COLOR)))
-                .setUnit(cursor.getInt(cursor.getColumnIndex(LocationEntry.UNIT)))
+                .setUnit(cursor.getString(cursor.getColumnIndex(LocationEntry.UNIT)))
                 .setPosition(cursor.getInt(cursor.getColumnIndex(LocationEntry.POSITION)));
         return locationBuilder;
     }
@@ -90,7 +90,7 @@ public class LocationBuilder {
         return this;
     }
 
-    public LocationBuilder setUnit(int unit) {
+    public LocationBuilder setUnit(String unit) {
         this.unit = unit;
         return this;
     }

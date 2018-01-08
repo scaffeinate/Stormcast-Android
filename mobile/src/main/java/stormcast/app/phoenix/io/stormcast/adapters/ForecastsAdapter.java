@@ -1,5 +1,6 @@
 package stormcast.app.phoenix.io.stormcast.adapters;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
@@ -24,10 +25,12 @@ import stormcast.app.phoenix.io.stormcast.common.local.LocationForecast;
  */
 public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.ViewHolder> {
 
+    private Context mContext;
     private List<LocationForecast> mLocationForecastList = null;
     private OnItemClickHandler mOnItemClickHandler;
 
-    public ForecastsAdapter(OnItemClickHandler onItemClickHandler) {
+    public ForecastsAdapter(Context context, OnItemClickHandler onItemClickHandler) {
+        this.mContext = context;
         this.mLocationForecastList = new ArrayList<>();
         this.mOnItemClickHandler = onItemClickHandler;
     }
@@ -105,11 +108,13 @@ public class ForecastsAdapter extends RecyclerView.Adapter<ForecastsAdapter.View
 
                 this.mLocationNameTextView.setText(location.getName());
 
-                if (forecast != null && forecast.getId() != 0) {
-                    this.mTemperatureTextView.setText((int) forecast.getTemperature() + "F");
-                    this.mMinTemperatureTextView.setText((int) forecast.getMinTemperature() + "F");
-                    this.mMaxTemperatureTextView.setText((int) forecast.getMaxTemperature() + "F");
+                if (forecast != null) {
+                    forecast.format(location.getUnit());
+                    this.mTemperatureTextView.setText(forecast.getFormattedTemperature());
+                    this.mMinTemperatureTextView.setText(forecast.getFormattedMinTemperature());
+                    this.mMaxTemperatureTextView.setText(forecast.getFormattedMaxTemperature());
                     this.mSummaryTextView.setText(forecast.getSummary());
+                    this.mWeatherIconView.setIconResource(mContext.getResources().getString(forecast.getIconResource()));
                 }
             }
         }

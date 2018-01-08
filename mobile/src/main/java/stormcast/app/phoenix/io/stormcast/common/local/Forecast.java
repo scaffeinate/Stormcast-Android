@@ -3,7 +3,15 @@ package stormcast.app.phoenix.io.stormcast.common.local;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Calendar;
 import java.util.List;
+
+import stormcast.app.phoenix.io.stormcast.utils.FormatUtils;
+import stormcast.app.phoenix.io.stormcast.utils.IconResource;
+
+import static stormcast.app.phoenix.io.stormcast.common.local.Unit.DU;
+import static stormcast.app.phoenix.io.stormcast.common.local.Unit.MILE;
+import static stormcast.app.phoenix.io.stormcast.common.local.Unit.PERCENT;
 
 /**
  * Created by sudharti on 8/24/17.
@@ -29,6 +37,12 @@ public class Forecast implements Parcelable {
     private long updatedAt;
     private List<DailyForecast> dailyForecastList;
 
+    private String formattedTemperature, formattedApparentTemperature,
+            formattedMinTemperature, formattedMaxTemperature,
+            formattedWindSpeed, formattedHumidity, formattedPressure,
+            formattedOzone, formattedVisibility, formattedUVIndex;
+    private int iconResource;
+
     protected Forecast(Parcel in) {
         setId(in.readInt());
         setTimezone(in.readString());
@@ -49,6 +63,17 @@ public class Forecast implements Parcelable {
         setUnits(in.readString());
         setLocationId(in.readInt());
         in.readTypedList(this.dailyForecastList, DailyForecast.CREATOR);
+        setFormattedTemperature(in.readString());
+        setFormattedApparentTemperature(in.readString());
+        setFormattedMinTemperature(in.readString());
+        setFormattedMaxTemperature(in.readString());
+        setFormattedWindSpeed(in.readString());
+        setFormattedHumidity(in.readString());
+        setFormattedPressure(in.readString());
+        setFormattedOzone(in.readString());
+        setFormattedUVIndex(in.readString());
+        setFormattedVisibility(in.readString());
+        setIconResource(in.readInt());
     }
 
     protected Forecast(ForecastBuilder builder) {
@@ -226,6 +251,94 @@ public class Forecast implements Parcelable {
         this.dailyForecastList = dailyForecastList;
     }
 
+    public String getFormattedTemperature() {
+        return formattedTemperature;
+    }
+
+    public void setFormattedTemperature(String formattedTemperature) {
+        this.formattedTemperature = formattedTemperature;
+    }
+
+    public String getFormattedApparentTemperature() {
+        return formattedApparentTemperature;
+    }
+
+    public void setFormattedApparentTemperature(String formattedApparentTemperature) {
+        this.formattedApparentTemperature = formattedApparentTemperature;
+    }
+
+    public String getFormattedMinTemperature() {
+        return formattedMinTemperature;
+    }
+
+    public void setFormattedMinTemperature(String formattedMinTemperature) {
+        this.formattedMinTemperature = formattedMinTemperature;
+    }
+
+    public String getFormattedMaxTemperature() {
+        return formattedMaxTemperature;
+    }
+
+    public void setFormattedMaxTemperature(String formattedMaxTemperature) {
+        this.formattedMaxTemperature = formattedMaxTemperature;
+    }
+
+    public String getFormattedWindSpeed() {
+        return formattedWindSpeed;
+    }
+
+    public void setFormattedWindSpeed(String formattedWindSpeed) {
+        this.formattedWindSpeed = formattedWindSpeed;
+    }
+
+    public String getFormattedHumidity() {
+        return formattedHumidity;
+    }
+
+    public void setFormattedHumidity(String formattedHumidity) {
+        this.formattedHumidity = formattedHumidity;
+    }
+
+    public String getFormattedPressure() {
+        return formattedPressure;
+    }
+
+    public void setFormattedPressure(String formattedPressure) {
+        this.formattedPressure = formattedPressure;
+    }
+
+    public String getFormattedOzone() {
+        return formattedOzone;
+    }
+
+    public void setFormattedOzone(String formattedOzone) {
+        this.formattedOzone = formattedOzone;
+    }
+
+    public String getFormattedVisibility() {
+        return formattedVisibility;
+    }
+
+    public void setFormattedVisibility(String formattedVisibility) {
+        this.formattedVisibility = formattedVisibility;
+    }
+
+    public String getFormattedUVIndex() {
+        return formattedUVIndex;
+    }
+
+    public void setFormattedUVIndex(String formattedUVIndex) {
+        this.formattedUVIndex = formattedUVIndex;
+    }
+
+    public int getIconResource() {
+        return iconResource;
+    }
+
+    public void setIconResource(int iconResource) {
+        this.iconResource = iconResource;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -252,5 +365,37 @@ public class Forecast implements Parcelable {
         parcel.writeString(this.units);
         parcel.writeInt(this.locationId);
         parcel.writeTypedList(this.dailyForecastList);
+        parcel.writeString(this.formattedTemperature);
+        parcel.writeString(this.formattedApparentTemperature);
+        parcel.writeString(this.formattedMinTemperature);
+        parcel.writeString(this.formattedMaxTemperature);
+        parcel.writeString(this.formattedWindSpeed);
+        parcel.writeString(this.formattedHumidity);
+        parcel.writeString(this.formattedPressure);
+        parcel.writeString(this.formattedOzone);
+        parcel.writeString(this.formattedUVIndex);
+        parcel.writeString(this.formattedVisibility);
+        parcel.writeInt(this.iconResource);
+    }
+
+    public void format(String unitType) {
+        Unit unit = new Unit(unitType);
+
+        Calendar currentTime = Calendar.getInstance();
+        currentTime.setTimeInMillis((long) this.getCurrentTime() * 1000);
+        int hourOfDay = currentTime.get(Calendar.HOUR_OF_DAY);
+        boolean isDay = (hourOfDay > 7 && hourOfDay < 20) ? true : false;
+        String icon = this.getIcon();
+        setFormattedTemperature(FormatUtils.formatTemperature(this.getTemperature(), unit));
+        setFormattedApparentTemperature(FormatUtils.formatTemperature(this.getApparentTemperature(), unit));
+        setFormattedMinTemperature(FormatUtils.formatTemperature(this.getMinTemperature(), unit));
+        setFormattedMaxTemperature(FormatUtils.formatTemperature(this.getMaxTemperature(), unit));
+        setFormattedWindSpeed(FormatUtils.formatSpeed(this.getWindSpeed(), unit));
+        setFormattedHumidity(FormatUtils.formatUnit(this.getHumidity(), PERCENT));
+        setFormattedPressure(FormatUtils.formatPressure(this.getPressure(), unit));
+        setFormattedOzone(FormatUtils.formatUnit(this.getOzone(), DU));
+        setFormattedUVIndex(String.valueOf(this.getUvIndex()));
+        setFormattedVisibility(FormatUtils.formatUnit(this.getVisibility(), MILE));
+        setIconResource(IconResource.getIconResource(icon, isDay));
     }
 }
