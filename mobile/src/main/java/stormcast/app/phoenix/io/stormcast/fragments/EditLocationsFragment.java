@@ -33,8 +33,8 @@ import stormcast.app.phoenix.io.stormcast.common.local.Location;
 import stormcast.app.phoenix.io.stormcast.common.local.LocationBuilder;
 import stormcast.app.phoenix.io.stormcast.data.PersistenceContract;
 import stormcast.app.phoenix.io.stormcast.databinding.FragmentEditLocationsBinding;
-import stormcast.app.phoenix.io.stormcast.loaders.CursorLoaderCallbacks;
-import stormcast.app.phoenix.io.stormcast.loaders.AsyncTaskLoaderCallbacks;
+import stormcast.app.phoenix.io.stormcast.loaders.ContentLoader;
+import stormcast.app.phoenix.io.stormcast.loaders.BackgroundLoader;
 import stormcast.app.phoenix.io.stormcast.views.drag_drop_list.ItemTouchHelperAdapter;
 import stormcast.app.phoenix.io.stormcast.views.drag_drop_list.ItemTouchHelperCallback;
 import stormcast.app.phoenix.io.stormcast.views.drag_drop_list.OnStartDragListener;
@@ -47,7 +47,7 @@ import static stormcast.app.phoenix.io.stormcast.Stormcast.UPDATE_LOCATIONS_LOAD
  * Created by sudharti on 1/1/18.
  */
 
-public class EditLocationsFragment extends Fragment implements ItemTouchHelperAdapter, OnStartDragListener, CursorLoaderCallbacks.ContentLoaderCallbacks, View.OnClickListener {
+public class EditLocationsFragment extends Fragment implements ItemTouchHelperAdapter, OnStartDragListener, ContentLoader.ContentLoaderCallbacks, View.OnClickListener {
     private Context mContext;
     private FragmentManager mFragmentManager;
 
@@ -64,7 +64,7 @@ public class EditLocationsFragment extends Fragment implements ItemTouchHelperAd
     private ContentResolver mContentResolver;
     private LoaderManager mLoaderManager;
 
-    private CursorLoaderCallbacks mCursorLoaderCallbacks;
+    private ContentLoader mContentLoader;
 
     private int mDeletedPosition = 0;
 
@@ -77,7 +77,7 @@ public class EditLocationsFragment extends Fragment implements ItemTouchHelperAd
         super.onCreate(savedInstanceState);
         mContext = getContext();
         mLocationList = new ArrayList<>();
-        mCursorLoaderCallbacks = new CursorLoaderCallbacks(mContext, this);
+        mContentLoader = new ContentLoader(mContext, this);
     }
 
     @Nullable
@@ -130,7 +130,7 @@ public class EditLocationsFragment extends Fragment implements ItemTouchHelperAd
 
     @Override
     public void onItemMove(final int fromPosition, final int toPosition) {
-        AsyncTaskLoaderCallbacks<Void> asyncTaskLoaderCallbacks = new AsyncTaskLoaderCallbacks<Void>(mContext, new AsyncTaskLoaderCallbacks.TaskLoaderCallbacks() {
+        BackgroundLoader<Void> backgroundLoader = new BackgroundLoader<Void>(mContext, new BackgroundLoader.Callbacks<Void>() {
             @Override
             public Void doInBackground() {
                 if (fromPosition < toPosition) {
@@ -150,14 +150,14 @@ public class EditLocationsFragment extends Fragment implements ItemTouchHelperAd
             }
 
             @Override
-            public void onTaskCompleted(Loader loader, Object data) {
+            public void onTaskCompleted(Loader loader, Void data) {
                 Toast.makeText(mContext, "Reorder complete", Toast.LENGTH_SHORT).show();
             }
         });
 
         Collections.swap(mLocationList, fromPosition, toPosition);
         mAdapter.notifyItemMoved(fromPosition, toPosition);
-        mLoaderManager.restartLoader(UPDATE_LOCATIONS_LOADER_ID, null, asyncTaskLoaderCallbacks);
+        mLoaderManager.restartLoader(UPDATE_LOCATIONS_LOADER_ID, null, backgroundLoader);
     }
 
     @Override
@@ -219,9 +219,9 @@ public class EditLocationsFragment extends Fragment implements ItemTouchHelperAd
 
     private void fetchLocations() {
         Bundle args = new Bundle();
-        args.putParcelable(CursorLoaderCallbacks.URI_EXTRA, PersistenceContract.LOCATIONS_CONTENT_URI);
+        args.putParcelable(ContentLoader.URI_EXTRA, PersistenceContract.LOCATIONS_CONTENT_URI);
         if (mLoaderManager != null) {
-            mLoaderManager.restartLoader(LOCATIONS_LOADER_ID, args, mCursorLoaderCallbacks);
+            mLoaderManager.restartLoader(LOCATIONS_LOADER_ID, args, mContentLoader);
         }
     }
 
@@ -230,7 +230,7 @@ public class EditLocationsFragment extends Fragment implements ItemTouchHelperAd
         Uri uri = PersistenceContract.LOCATIONS_CONTENT_URI.buildUpon()
                 .appendPath(String.valueOf(location.getId()))
                 .build();
-        args.putParcelable(CursorLoaderCallbacks.URI_EXTRA, uri);
+        args.putParcelable(ContentLoader.URI_EXTRA, uri);
         if (mContentResolver != null) {
             try {
                 mContentResolver.delete(uri, null, null);

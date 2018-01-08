@@ -1,15 +1,11 @@
 package stormcast.app.phoenix.io.stormcast.network;
 
-import android.util.Log;
-
-import java.io.IOException;
-
-import retrofit2.Response;
+import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import stormcast.app.phoenix.io.stormcast.BuildConfig;
 import stormcast.app.phoenix.io.stormcast.common.local.Location;
-import stormcast.app.phoenix.io.stormcast.common.network.Forecast;
+import stormcast.app.phoenix.io.stormcast.common.network._Forecast;
 
 /**
  * Created by sudharti on 8/22/17.
@@ -42,19 +38,13 @@ public class DarkSkyApiClient {
         return mDarkSkyApiClient;
     }
 
-    public Response<Forecast> loadForecast(Location location) {
+    public Call<_Forecast> createForecastRequestFor(Location location) {
         String latLng = new StringBuilder()
                 .append(location.getLatitude())
                 .append(",")
                 .append(location.getLongitude())
                 .toString();
         String exclude = "minutely";
-        Response<Forecast> response = null;
-        try {
-            response = darkSkyApi.loadForecast(API_KEY, latLng, exclude, location.getUnit()).execute();
-        } catch (IOException e) {
-            Log.e(TAG, "Exception occurred while loading forecast: " + e.getMessage());
-        }
-        return response;
+        return darkSkyApi.loadForecast(API_KEY, latLng, exclude, location.getUnit());
     }
 }

@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
 
@@ -12,14 +13,14 @@ import android.util.Log;
  * Created by sudharti on 1/1/18.
  */
 
-public class CursorLoader implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ContentLoader implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String URI_EXTRA = "url_extra";
-    private static final String TAG = CursorLoader.class.getSimpleName();
+    private static final String TAG = ContentLoader.class.getSimpleName();
     private final Context mContext;
     private final ContentLoaderCallbacks mCallback;
 
-    public CursorLoader(Context context, ContentLoaderCallbacks callback) {
+    public ContentLoader(Context context, ContentLoaderCallbacks callback) {
         this.mContext = context;
         this.mCallback = callback;
     }

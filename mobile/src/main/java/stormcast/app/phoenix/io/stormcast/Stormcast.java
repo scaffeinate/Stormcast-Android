@@ -11,4 +11,6 @@ public final class Stormcast {
     public static final int LOCATIONS_LOADER_ID = 100;
 
     public static final int UPDATE_LOCATIONS_LOADER_ID = 101;
+
+    public static final int FORECASTS_LOADER_ID = 200;
 }

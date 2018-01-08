@@ -15,27 +15,34 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
 import stormcast.app.phoenix.io.stormcast.R;
 import stormcast.app.phoenix.io.stormcast.activities.ToolbarCallbacks;
 import stormcast.app.phoenix.io.stormcast.adapters.ForecastsAdapter;
 import stormcast.app.phoenix.io.stormcast.adapters.OnItemClickHandler;
 import stormcast.app.phoenix.io.stormcast.common.local.LocationForecast;
 import stormcast.app.phoenix.io.stormcast.common.local.LocationForecastBuilder;
+import stormcast.app.phoenix.io.stormcast.common.network._Forecast;
 import stormcast.app.phoenix.io.stormcast.data.PersistenceContract;
 import stormcast.app.phoenix.io.stormcast.databinding.FragmentHomeBinding;
-import stormcast.app.phoenix.io.stormcast.loaders.CursorLoaderCallbacks;
+import stormcast.app.phoenix.io.stormcast.loaders.ContentLoader;
+import stormcast.app.phoenix.io.stormcast.loaders.NetworkQueueLoader;
+import stormcast.app.phoenix.io.stormcast.loaders.NetworkQueueLoader.Callbacks;
+import stormcast.app.phoenix.io.stormcast.network.DarkSkyApiClient;
 
+import static stormcast.app.phoenix.io.stormcast.Stormcast.FORECASTS_LOADER_ID;
 import static stormcast.app.phoenix.io.stormcast.Stormcast.LOCATIONS_LOADER_ID;
 
 /**
  * Created by sudharti on 12/31/17.
  */
 
-public class ForecastFragment extends Fragment implements View.OnClickListener, CursorLoaderCallbacks.ContentLoaderCallbacks, OnItemClickHandler {
+public class ForecastFragment extends Fragment implements View.OnClickListener, ContentLoader.ContentLoaderCallbacks, OnItemClickHandler {
 
     private static final String TAG = ForecastFragment.class.getSimpleName();
     private Context mContext;
@@ -43,9 +50,10 @@ public class ForecastFragment extends Fragment implements View.OnClickListener, 
     private FragmentHomeBinding mBinding;
     private FragmentManager mFragmentManager;
     private RecyclerView.LayoutManager mLayoutManager;
+    private DarkSkyApiClient mApiClient = DarkSkyApiClient.getInstance();
 
     private ToolbarCallbacks mToolbarCallbacks;
-    private CursorLoaderCallbacks mCursorLoaderCallbacks;
+    private ContentLoader mContentLoader;
 
     private ForecastsAdapter mAdapter;
     private LoaderManager mLoaderManager;
@@ -58,7 +66,7 @@ public class ForecastFragment extends Fragment implements View.OnClickListener, 
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getContext();
-        mCursorLoaderCallbacks = new CursorLoaderCallbacks(mContext, this);
+        mContentLoader = new ContentLoader(mContext, this);
         mLocationForecastList = new ArrayList<>();
     }
 
@@ -138,34 +146,28 @@ public class ForecastFragment extends Fragment implements View.OnClickListener, 
 
     private void fetchLocations() {
         Bundle args = new Bundle();
-        args.putParcelable(CursorLoaderCallbacks.URI_EXTRA, PersistenceContract.LOCATIONS_FORECAST_CONTENT_URI);
+        args.putParcelable(ContentLoader.URI_EXTRA, PersistenceContract.LOCATIONS_FORECAST_CONTENT_URI);
         if (mLoaderManager != null) {
-            mLoaderManager.restartLoader(LOCATIONS_LOADER_ID, args, mCursorLoaderCallbacks);
+            mLoaderManager.restartLoader(LOCATIONS_LOADER_ID, args, mContentLoader);
         }
     }
 
     private void loadFromNetwork() {
-        /*AsyncTaskLoaderCallbacks<Void> asyncTaskLoaderCallbacks = new AsyncTaskLoaderCallbacks<>(mContext, new TaskLoaderCallbacks() {
-            @Override
-            public Object doInBackground() {
-                Log.i(ForecastFragment.class.getSimpleName(), "Loader started");
-                cursor.moveToFirst();
-                while (!cursor.isAfterLast()) {
-                    Location location = LocationBuilder.from(cursor).build();
-                    cursor.moveToNext();
-                    Response<Forecast> response = DarkSkyApiClient.getInstance().loadForecast(location);
-                    Log.i(TAG, location.getName() + " " + response.body().getDaily().getSummary());
-                }
-                return null;
+        List<Call<_Forecast>> callList = new ArrayList<>();
+        for (int i = 0; i < mLocationForecastList.size(); i++) {
+            LocationForecast locationForecast = mLocationForecastList.get(i);
+            if (locationForecast != null && locationForecast.getLocation() != null) {
+                callList.add(mApiClient.createForecastRequestFor(locationForecast.getLocation()));
             }
-
+        }
+        
+        NetworkQueueLoader<_Forecast> networkQueueLoader = new NetworkQueueLoader<>(mContext, callList, new Callbacks<_Forecast>() {
             @Override
-            public void onTaskCompleted(Loader loader, Object data) {
-
+            public void onTaskCompleted(Loader loader, List<_Forecast> data) {
+                Toast.makeText(mContext, "Task completed " + data.size(), Toast.LENGTH_SHORT).show();
             }
         });
-
-        mLoaderManager.restartLoader(UPDATE_LOCATIONS_LOADER_ID, null, asyncTaskLoaderCallbacks);*/
+        mLoaderManager.restartLoader(FORECASTS_LOADER_ID, null, networkQueueLoader);
     }
 
     private void showRecyclerView() {
